@@ -88,7 +88,7 @@ std::string getFileContent(const wchar_t *file2read)
 #else
 std::string getFileContent( const wchar_t* file2read )
 {
-	if ( !::PathFileExists( file2read ) )
+	if ( !::doesFileExist( file2read ) )
 		return "";
 
 	if ( GetFileLength( file2read ) == 0 )

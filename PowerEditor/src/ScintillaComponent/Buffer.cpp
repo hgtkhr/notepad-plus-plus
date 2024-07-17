@@ -828,7 +828,7 @@ BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encod
 	//Get file size
 	std::int64_t fileSize = -1;
 	const wchar_t* pPath = filename;
-	if ( !::PathFileExistsW( pPath ) )
+	if ( !::doesFileExist( pPath ) )
 	{
 		pPath = backupFileName;
 	}
@@ -880,8 +880,8 @@ BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encod
 		}
 	}
 
-	bool isSnapshotMode = backupFileName != NULL && PathFileExists( backupFileName );
-	if ( isSnapshotMode && !PathFileExists( fullpath ) ) // if backup mode and fullpath doesn't exist, we guess is UNTITLED
+	bool isSnapshotMode = backupFileName != NULL && doesFileExist( backupFileName );
+	if ( isSnapshotMode && !doesFileExist( fullpath ) ) // if backup mode and fullpath doesn't exist, we guess is UNTITLED
 	{
 		wcscpy_s( fullpath, MAX_PATH, filename ); // we restore fullpath with filename, in our case is "new  #"
 	}
@@ -925,7 +925,7 @@ BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encod
 		if ( backupFileName != NULL )
 		{
 			newBuf->_backupFileName = backupFileName;
-			if ( !PathFileExists( fullpath ) )
+			if ( !doesFileExist( fullpath ) )
 				newBuf->_currentStatus = DOC_UNNAMED;
 		}
 
