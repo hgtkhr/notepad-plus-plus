@@ -205,7 +205,7 @@ intptr_t CALLBACK HashFromFilesDlg::run_dlgProc(UINT message, WPARAM wParam, LPA
 							boost::iostreams::mapped_file_source mmDevice;
 
 							const std::uint8_t* content = reinterpret_cast< const std::uint8_t* >( "" );
-							const std::size_t size = boost::filesystem::file_size( filename );
+							const std::size_t size = GetFileLength( filename.c_str() );
 
 							if ( size > 0 )
 							{
