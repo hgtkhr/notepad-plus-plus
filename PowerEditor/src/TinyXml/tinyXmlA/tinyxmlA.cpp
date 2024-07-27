@@ -817,7 +817,7 @@ bool TiXmlDocumentA::LoadFile( const char* filename )
 #endif
 
 #ifdef MPP_USE_ORIGINAL_CODE
-bool TiXmlDocumentA::LoadUnicodeFilePath( const TCHAR* filename )
+bool TiXmlDocumentA::LoadUnicodeFilePath( const wchar_t* filename )
 {
 	
 	// Delete the existing data:
