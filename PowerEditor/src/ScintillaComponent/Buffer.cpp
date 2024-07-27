@@ -874,7 +874,7 @@ BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encod
 	else
 	{
 		::GetFullPathNameW( filename, MAX_PATH, fullpath, NULL );
-		if ( wcschr( fullpath, '~' ) )
+		if ( wcschr( fullpath, L'~' ) )
 		{
 			::GetLongPathNameW( fullpath, fullpath, MAX_PATH );
 		}
@@ -2027,8 +2027,8 @@ bool FileManager::loadFileData( Document doc, int64_t fileSize, std::istream& is
 		{
 			pNativeSpeaker->messageBox( "FileTooBigToOpen",
 										_pNotepadPlus->_pEditView->getHSelf(),
-										TEXT( "File is too big to be opened by Notepad++" ),
-										TEXT( "File size problem" ),
+										L"File is too big to be opened by Notepad++",
+										L"File size problem",
 										MB_OK | MB_APPLMODAL );
 
 			return false;
@@ -2040,8 +2040,8 @@ bool FileManager::loadFileData( Document doc, int64_t fileSize, std::istream& is
 			{
 				int res = pNativeSpeaker->messageBox( "WantToOpenHugeFile",
 													  _pNotepadPlus->_pEditView->getHSelf(),
-													  TEXT( "Opening a huge file of 2GB+ could take several minutes.\nDo you want to open it?" ),
-													  TEXT( "Opening huge file warning" ),
+													  L"Opening a huge file of 2GB+ could take several minutes.\nDo you want to open it?",
+													  L"Opening huge file warning",
 													  MB_YESNO | MB_APPLMODAL );
 
 				if ( res == IDYES )
@@ -2198,8 +2198,8 @@ bool FileManager::loadFileData( Document doc, int64_t fileSize, std::istream& is
 			{
 				pNativeSpeaker->messageBox( "FileMemoryAllocationFailed",
 											_pNotepadPlus->_pEditView->getHSelf(),
-											TEXT( "There is probably not enough contiguous free memory for the file being loaded by Notepad++." ),
-											TEXT( "Exception: File memory allocation failed" ),
+											L"There is probably not enough contiguous free memory for the file being loaded by Notepad++.",
+											L"Exception: File memory allocation failed",
 											MB_OK | MB_APPLMODAL );
 			}
 			[[fallthrough]];
@@ -2212,8 +2212,8 @@ bool FileManager::loadFileData( Document doc, int64_t fileSize, std::istream& is
 		{
 			pNativeSpeaker->messageBox( "FileLoadingException",
 										_pNotepadPlus->_pEditView->getHSelf(),
-										TEXT( "An error occurred while loading the file!" ),
-										TEXT( "Exception code: $STR_REPLACE$" ),
+										L"An error occurred while loading the file!",
+										L"Exception code: $STR_REPLACE$",
 										MB_OK | MB_APPLMODAL,
 										0,
 										szException );
