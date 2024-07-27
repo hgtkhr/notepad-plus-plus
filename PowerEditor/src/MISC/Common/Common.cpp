@@ -54,7 +54,7 @@ void printStr(const wchar_t *str2print)
 
 wstring commafyInt(size_t n)
 {
-	generic_stringstream ss;
+	std::basic_stringstream<wchar_t> ss;
 	ss.imbue(std::locale(""));
 	ss << n;
 	return ss.str();

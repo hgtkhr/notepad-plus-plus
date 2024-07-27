@@ -833,7 +833,7 @@ bool TiXmlDocumentA::LoadUnicodeFilePath( const wchar_t* filename )
 	// See STL_STRING_BUG above.
 	// Fixed with the StringToBuffer class.
 
-	FILE* file = _wfopen(filename, TEXT("r"));
+	FILE* file = _wfopen(filename, L"r");
 
 	if ( file )
 	{
