@@ -3425,11 +3425,23 @@ void Notepad_plus::command(int id)
 					char *selectedStr = new char[strSize];
 					_pEditView->execute(SCI_GETSELTEXT, 0, reinterpret_cast<LPARAM>(selectedStr));
 
+#ifdef MPP_USE_ORIGINAL_CODE
 					MD5 md5;
 					std::string md5ResultA = md5.digestString(selectedStr);
 					std::wstring md5ResultW(md5ResultA.begin(), md5ResultA.end());
 					str2Clipboard(md5ResultW, _pPublicInterface->getHSelf());
-					
+#else
+					uint8_t hash[hash_md5] = {};
+					wchar_t hashStr[33] = {};
+
+					calc_md5( hash, reinterpret_cast< const uint8_t* >( selectedStr ), strlen( selectedStr ) );
+
+					for ( int i = 0; i < hash_md5; i++ )
+						wsprintf( hashStr + i * 2, L"%02x", hash[i] );
+#endif
+
+					str2Clipboard( hashStr, _pPublicInterface->getHSelf() );
+
 					delete [] selectedStr;
 				}
 			}
