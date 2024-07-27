@@ -197,7 +197,7 @@ intptr_t CALLBACK HashFromFilesDlg::run_dlgProc(UINT message, WPARAM wParam, LPA
 								hashResultStr += hashStr;
 								hashResultStr += L"  ";
 								hashResultStr += fileName;
-								hashResultStr += TEXT( "\r\n" );
+								hashResultStr += L"\r\n";
 							}
 						}
 #else
