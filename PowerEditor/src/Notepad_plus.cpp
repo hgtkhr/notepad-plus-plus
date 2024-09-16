@@ -4321,7 +4321,7 @@ void Notepad_plus::updateStatusBar()
 	wchar_t strDocLen[256];
 	size_t docLen = _pEditView->getCurrentDocLen();
 	intptr_t nbLine = _pEditView->execute(SCI_GETLINECOUNT);
-	wsprintf(strDocLen, L"length : %s    lines : %s",
+	::swprintf_s(strDocLen, L"length : %s    lines : %s",
 		commafyInt(docLen).c_str(),
 		commafyInt(nbLine).c_str());
 	_statusBar.setText(strDocLen, STATUSBAR_DOC_SIZE);
@@ -4334,12 +4334,12 @@ void Notepad_plus::updateStatusBar()
 		if (_pEditView->execute(SCI_GETSELECTIONEMPTY))
 		{
 			size_t currPos = _pEditView->execute(SCI_GETCURRENTPOS);
-			wsprintf(strSel, L"Pos : %s", commafyInt(currPos + 1).c_str());
+			::swprintf_s(strSel, L"Pos : %s", commafyInt(currPos + 1).c_str());
 		}
 		else
 		{
 			const std::pair<size_t, size_t> oneSelCharsAndLines = _pEditView->getSelectedCharsAndLinesCount();
-			wsprintf(strSel, L"Sel : %s | %s",
+			::swprintf_s(strSel, L"Sel : %s | %s",
 				commafyInt(oneSelCharsAndLines.first).c_str(),
 				commafyInt(oneSelCharsAndLines.second).c_str());
 		}
@@ -4374,7 +4374,7 @@ void Notepad_plus::updateStatusBar()
 			}
 		}
 
-		wsprintf(strSel, L"Sel : %sx%s %s %s",
+		::swprintf_s(strSel, L"Sel : %sx%s %s %s",
 			commafyInt(nbSelections).c_str(),  // lines (rows) in rectangular selection
 			commafyInt(maxLineCharCount).c_str(),  // show maximum width for columns
 			sameCharCountOnEveryLine ? L"=" : L"->",
@@ -4385,7 +4385,7 @@ void Notepad_plus::updateStatusBar()
 		const int maxSelsToProcessLineCount = 99;  // limit the number of selections to process, for performance reasons
 		const std::pair<size_t, size_t> multipleSelCharsAndLines = _pEditView->getSelectedCharsAndLinesCount(maxSelsToProcessLineCount);
 
-		wsprintf(strSel, L"Sel %s : %s | %s",
+		::swprintf_s(strSel, L"Sel %s : %s | %s",
 			commafyInt(nbSelections).c_str(),
 			commafyInt(multipleSelCharsAndLines.first).c_str(),
 			nbSelections <= maxSelsToProcessLineCount ?
@@ -4396,7 +4396,7 @@ void Notepad_plus::updateStatusBar()
 	wchar_t strLnColSel[128];
 	intptr_t curLN = _pEditView->getCurrentLineNumber();
 	intptr_t curCN = _pEditView->getCurrentColumnNumber();
-	wsprintf(strLnColSel, L"Ln : %s    Col : %s    %s",
+	::swprintf_s(strLnColSel, L"Ln : %s    Col : %s    %s",
 		commafyInt(curLN + 1).c_str(),
 		commafyInt(curCN + 1).c_str(),
 		strSel);
@@ -6392,7 +6392,7 @@ bool Notepad_plus::dumpFiles(const wchar_t * outdir, const wchar_t * fileprefix)
 			somedirty = true;
 
 		const wchar_t * unitext = (docbuf->getUnicodeMode() != uni8Bit)?L"_utf8":L"";
-		wsprintf(savePath, L"%s\\%s%03d%s.dump", outdir, fileprefix, static_cast<int>(i), unitext);
+		::swprintf_s(savePath, L"%s\\%s%03d%s.dump", outdir, fileprefix, static_cast<int>(i), unitext);
 
 		SavingStatus res = MainFileManager.saveBuffer(docbuf->getID(), savePath);
 

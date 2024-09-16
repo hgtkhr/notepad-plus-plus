@@ -426,7 +426,7 @@ void DisplayColumn(HWND hWnd, int SI, int c, int offset, HFONT hfont, HFONT hcol
 			else { high += 64; }
 			if (low == 0) { low = 26; }
 			low += 64;
-			wsprintf(buffer, L"%c%c", high, low);
+			::swprintf_s(buffer, L"%c%c", high, low);
 		}
 	}
 	else
@@ -478,7 +478,7 @@ void DisplayColumn(HWND hWnd, int SI, int c, int offset, HFONT hfont, HFONT hcol
 		int iProperty = 0;
 		if ((c == 0) && (BGHS[SI].ROWSNUMBERED))
 		{
-			wsprintf(buffer, L"%d", r);
+			::swprintf_s(buffer, L"%d", r);
 			iProperty = 2 << 4; // iDataType = NUMERIC
 		}
 		else
@@ -712,7 +712,7 @@ wchar_t GetASCII(WPARAM wParam, LPARAM lParam)
 	int result = ToAscii(static_cast<UINT>(wParam), (lParam >> 16) & 0xff, keys, &dwReturnedValue, 0);
 	int returnvalue = (wchar_t)dwReturnedValue;
 	if (returnvalue < 0) { returnvalue = 0; }
-	wsprintf(mbuffer, L"return value = %d", returnvalue);
+	::swprintf_s(mbuffer, L"return value = %d", returnvalue);
 	if (result != 1) { returnvalue = 0; }
 	return (wchar_t)returnvalue;
 
@@ -1363,7 +1363,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 			//see if that cell is already loaded
 			int FindResult = BinarySearchListBox(BGHS[SelfIndex].hlist1, buffer);
 			if (FindResult != LB_ERR)
@@ -1453,7 +1453,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 
 			if (!BGHS[SelfIndex].INITIALCONTENT) // performance enhancement while adding new data
 			{
@@ -1591,7 +1591,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 			//see if that cell is already loaded
 			int FindResult = BinarySearchListBox(BGHS[SelfIndex].hlist1, buffer);
 			if (FindResult != LB_ERR)
@@ -1660,7 +1660,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 			//see if that cell is already loaded
 			int FindResult = BinarySearchListBox(BGHS[SelfIndex].hlist1, buffer);
 			if (FindResult != LB_ERR)
@@ -1748,7 +1748,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 			//see if that cell is already loaded
 			int FindResult = BinarySearchListBox(BGHS[SelfIndex].hlist1, buffer);
 			if (FindResult != LB_ERR)
@@ -1782,7 +1782,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ReturnValue = -1;
 				break;
 			}
-			wsprintf(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
+			::swprintf_s(buffer, L"%05d-%03d", LPBGcell->row, LPBGcell->col);
 			//see if that cell is already loaded
 			ReturnValue = 0;
 			int FindResult = BinarySearchListBox(BGHS[SelfIndex].hlist1, buffer);

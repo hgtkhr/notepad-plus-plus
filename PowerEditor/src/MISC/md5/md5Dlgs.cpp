@@ -188,7 +188,7 @@ intptr_t CALLBACK HashFromFilesDlg::run_dlgProc(UINT message, WPARAM wParam, LPA
 								}
 
 								for (int i = 0; i < _ht; i++)
-									wsprintf(hashStr + i * 2, L"%02x", hash[i]);
+									::swprintf_s(hashStr + i * 2, 3, L"%02x", hash[i]);
 
 								files2check += it;
 								files2check += L"\r\n";
@@ -252,7 +252,7 @@ intptr_t CALLBACK HashFromFilesDlg::run_dlgProc(UINT message, WPARAM wParam, LPA
 							}
 
 							for ( int i = 0; i < _ht; i++ )
-								::swprintf_s( hashStr + i * 2, sizeof hashStr, L"%02x", hash[i] );
+								::swprintf_s( hashStr + i * 2, 3, L"%02x", hash[i] );
 
 							files2check += it;
 							files2check += L"\r\n";
@@ -442,7 +442,7 @@ void HashFromTextDlg::generateHash()
 			}
 
 			for (int i = 0; i < _ht; i++)
-				wsprintf(hashStr + i * 2, L"%02x", hash[i]);
+				::swprintf_s(hashStr + i * 2, 3, L"%02x", hash[i]);
 
 			::SetDlgItemText(_hSelf, IDC_HASH_RESULT_FOMTEXT_EDIT, hashStr);
 		}

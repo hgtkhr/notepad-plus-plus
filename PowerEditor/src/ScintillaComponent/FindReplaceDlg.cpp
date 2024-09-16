@@ -3645,7 +3645,7 @@ void FindReplaceDlg::findAllIn(InWhat op)
 	if (::SendMessage(_hParent, cmdid, static_cast<WPARAM>(limitSearchScopeToSelection ? 1 : 0), 0))
 	{
 		wstring text = _pFinder->getHitsString(_findAllResult);
-		wsprintf(_findAllResultStr, text.c_str());
+		::swprintf_s(_findAllResultStr, text.c_str());
 
 		if (_findAllResult)
 		{
@@ -6034,9 +6034,9 @@ void FindIncrementDlg::setFindStatus(FindStatus iStatus, int nbCounted)
 			wchar_t strFindFSFound[128] = L"";
 
 			if (nbCounted == 1)
-				wsprintf(strFindFSFound, L"%d match", nbCounted);
+				::swprintf_s(strFindFSFound, L"%d match", nbCounted);
 			else
-				wsprintf(strFindFSFound, L"%s matches", commafyInt(nbCounted).c_str());
+				::swprintf_s(strFindFSFound, L"%s matches", commafyInt(nbCounted).c_str());
 			statusStr2Display = strFindFSFound;
 		}
 		else

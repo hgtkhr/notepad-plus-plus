@@ -94,7 +94,7 @@ void TiXmlBase::PutString( const TIXML_STRING& str, TIXML_STRING* outString )
 			// Easy pass at non-alpha/numeric/symbol
 			// 127 is the delete key. Below 32 is symbolic.
 			wchar_t buf[32];
-			wsprintf( buf, L"&#x%04X;", static_cast<unsigned int>(c & 0xffff) );
+			::swprintf_s( buf, L"&#x%04X;", static_cast<unsigned int>(c & 0xffff) );
 			outString->append( buf, lstrlen( buf ) );
 			++i;
 		}
@@ -531,7 +531,7 @@ int TiXmlElement::QueryDoubleAttribute( const wchar_t* name, double* dval ) cons
 void TiXmlElement::SetAttribute( const wchar_t * name, int val )
 {	
 	wchar_t buf[64];
-	wsprintf( buf, L"%d", val );
+	::swprintf_s( buf, L"%d", val );
 	SetAttribute( name, buf );
 }
 
@@ -974,14 +974,14 @@ int TiXmlAttribute::QueryDoubleValue( double* dval ) const
 void TiXmlAttribute::SetIntValue( int _value )
 {
 	wchar_t buf [64];
-	wsprintf (buf, L"%d", _value);
+	::swprintf_s(buf, L"%d", _value);
 	SetValue (buf);
 }
 
 void TiXmlAttribute::SetDoubleValue( double _value )
 {
 	wchar_t buf [64];
-	wsprintf (buf, L"%lf", _value);
+	::swprintf_s(buf, L"%lf", _value);
 	SetValue (buf);
 }
 

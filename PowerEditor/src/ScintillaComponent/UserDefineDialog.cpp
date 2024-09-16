@@ -1808,7 +1808,7 @@ intptr_t CALLBACK StylerDlg::dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPA
             if (style._fontSize == -1)
                 size[0] = '\0';
             else
-                wsprintf(size, L"%d",style._fontSize);
+                ::swprintf_s(size, L"%d",style._fontSize);
 
 			auto i = ::SendMessage(hFontSizeCombo, CB_FINDSTRINGEXACT, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(size));
             if (i != CB_ERR)

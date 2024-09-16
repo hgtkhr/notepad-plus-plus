@@ -222,7 +222,7 @@ void Gripper::create()
     {
         DWORD dwError = ::GetLastError();
         wchar_t  str[128];
-        ::wsprintf(str, L"GetLastError() returned %lu", dwError);
+		::swprintf_s(str, L"GetLastError() returned %lu", dwError);
         ::MessageBox(NULL, str, L"SetWindowsHookEx(MOUSE) failed on Gripper::create()", MB_OK | MB_ICONERROR);
     }
 
@@ -233,7 +233,7 @@ void Gripper::create()
 		{
 			DWORD dwError = ::GetLastError();
 			wchar_t  str[128];
-			::wsprintf(str, L"GetLastError() returned %lu", dwError);
+			::swprintf_s(str, L"GetLastError() returned %lu", dwError);
 			::MessageBox(NULL, str, L"SetWindowsHookEx(KEYBOARD) failed on Gripper::create()", MB_OK | MB_ICONERROR);
 		}
 	}
@@ -474,7 +474,7 @@ void Gripper::doTabReordering(POINT pt)
 #if 0
 	extern HWND g_hMainWnd;
 	wchar_t str[128];
-	wsprintf(str, L"Size: %i", vCont.size());
+	::swprintf_s(str, L"Size: %i", vCont.size());
 	::SetWindowText(g_hMainWnd, str);
 #endif
 

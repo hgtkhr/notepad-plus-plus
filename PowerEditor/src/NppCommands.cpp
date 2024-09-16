@@ -3433,7 +3433,7 @@ void Notepad_plus::command(int id)
 					calc_md5( hash, reinterpret_cast< const uint8_t* >( selectedStr ), strlen( selectedStr ) );
 
 					for ( int i = 0; i < hash_md5; i++ )
-						wsprintf( hashStr + i * 2, L"%02x", hash[i] );
+						::swprintf_s( hashStr + i * 2, 3, L"%02x", hash[i] );
 #endif
 
 					str2Clipboard( hashStr, _pPublicInterface->getHSelf() );
@@ -3545,7 +3545,7 @@ void Notepad_plus::command(int id)
 							return;
 					}
 					for (int i = 0; i < hashLen; i++)
-						wsprintf(hashStr + i * 2, L"%02x", hash[i]);
+						::swprintf_s(hashStr + i * 2, 3, L"%02x", hash[i]);
 
 					str2Clipboard(hashStr, _pPublicInterface->getHSelf());
 

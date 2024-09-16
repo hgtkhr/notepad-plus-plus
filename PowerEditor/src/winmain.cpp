@@ -732,7 +732,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 	{
 		wchar_t str[50] = L"God Damned Exception:";
 		wchar_t code[10];
-		wsprintf(code, L"%d", i);
+		::swprintf_s(code, L"%d", i);
 		wcscat_s(str, code);
 		::MessageBox(Notepad_plus_Window::gNppHWND, str, L"Int Exception", MB_OK);
 		doException(notepad_plus_plus);
@@ -745,7 +745,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 	catch (const Win32Exception & ex)
 	{
 		wchar_t message[1024];	//TODO: sane number
-		wsprintf(message, L"An exception occured. Notepad++ cannot recover and must be shut down.\r\nThe exception details are as follows:\r\n"
+		::swprintf_s(message, L"An exception occured. Notepad++ cannot recover and must be shut down.\r\nThe exception details are as follows:\r\n"
 			L"Code:\t0x%08X\r\nType:\t%S\r\nException address: 0x%p", ex.code(), ex.what(), ex.where());
 		::MessageBox(Notepad_plus_Window::gNppHWND, message, L"Win32Exception", MB_OK | MB_ICONERROR);
 		mdump.writeDump(ex.info());

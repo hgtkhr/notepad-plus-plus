@@ -8452,7 +8452,7 @@ void NppParameters::writeStyle2Element(const Style & style2Write, Style & style2
 	{
 		int rgbVal = RGB2int(style2Write._fgColor);
 		wchar_t fgStr[7];
-		wsprintf(fgStr, L"%.6X", rgbVal);
+		::swprintf_s(fgStr, L"%.6X", rgbVal);
 		element->SetAttribute(L"fgColor", fgStr);
 	}
 
@@ -8460,7 +8460,7 @@ void NppParameters::writeStyle2Element(const Style & style2Write, Style & style2
 	{
 		int rgbVal = RGB2int(style2Write._bgColor);
 		wchar_t bgStr[7];
-		wsprintf(bgStr, L"%.6X", rgbVal);
+		::swprintf_s(bgStr, L"%.6X", rgbVal);
 		element->SetAttribute(L"bgColor", bgStr);
 	}
 
@@ -8556,7 +8556,7 @@ void NppParameters::insertUserLang2Tree(TiXmlNode *node, UserLangContainer *user
 		{
 			int rgbVal = RGB2int(style2Write._fgColor);
 			wchar_t fgStr[7];
-			wsprintf(fgStr, L"%.6X", rgbVal);
+			::swprintf_s(fgStr, L"%.6X", rgbVal);
 			styleElement->SetAttribute(L"fgColor", fgStr);
 		}
 
@@ -8564,7 +8564,7 @@ void NppParameters::insertUserLang2Tree(TiXmlNode *node, UserLangContainer *user
 		{
 			int rgbVal = RGB2int(style2Write._bgColor);
 			wchar_t bgStr[7];
-			wsprintf(bgStr, L"%.6X", rgbVal);
+			::swprintf_s(bgStr, L"%.6X", rgbVal);
 			styleElement->SetAttribute(L"bgColor", bgStr);
 		}
 

@@ -76,7 +76,7 @@ bool SecurityGuard::checkSha256(const std::wstring& filePath, NppModule module2c
 
 	wchar_t sha2hashStr[65] = { '\0' };
 	for (size_t i = 0; i < 32; i++)
-		wsprintf(sha2hashStr + i * 2, L"%02x", sha2hash[i]);
+		::swprintf_s(sha2hashStr + i * 2, 3, L"%02x", sha2hash[i]);
 
 	const std::vector<std::wstring>* moduleSha256 = nullptr;
 

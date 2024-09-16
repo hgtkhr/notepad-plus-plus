@@ -340,7 +340,7 @@ size_t Printer::doPrint(bool justDoIt)
 			printPage = false;
 
 		wchar_t pageString[32]{};
-		wsprintf(pageString, L"%0d", pageNum);
+		::swprintf_s(pageString, L"%0d", pageNum);
 		
 		if (printPage) 
 		{

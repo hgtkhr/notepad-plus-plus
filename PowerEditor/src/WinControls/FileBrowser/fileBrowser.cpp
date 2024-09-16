@@ -822,9 +822,9 @@ void FileBrowser::popupMenuCmd(int cmdID)
 			{
 				wchar_t cmdStr[1024] = {};
 				if (getNodeType(selectedNode) == browserNodeType_file)
-					wsprintf(cmdStr, L"explorer /select,\"%s\"", path.c_str());
+					::swprintf_s(cmdStr, L"explorer /select,\"%s\"", path.c_str());
 				else
-					wsprintf(cmdStr, L"explorer \"%s\"", path.c_str());
+					::swprintf_s(cmdStr, L"explorer \"%s\"", path.c_str());
 				Command cmd(cmdStr);
 				cmd.run(nullptr);
 			}

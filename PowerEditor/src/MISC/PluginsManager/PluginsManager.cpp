@@ -402,7 +402,7 @@ bool PluginsManager::loadPlugins(const wchar_t* dir, const PluginViewList* plugi
 								PluginUpdateInfo* incompatiblePlg = new PluginUpdateInfo(*pui);
 								incompatiblePlg->_version = v;
 								wchar_t msg[1024];
-								wsprintf(msg, incompatibleWarning, incompatiblePlg->_displayName.c_str(), v.toString().c_str(), nppVer.toString().c_str());
+								::swprintf_s(msg, incompatibleWarning, incompatiblePlg->_displayName.c_str(), v.toString().c_str(), nppVer.toString().c_str());
 								incompatiblePlg->_description = msg;
 								pluginIncompatibleList->pushBack(incompatiblePlg);
 							}
@@ -420,7 +420,7 @@ bool PluginsManager::loadPlugins(const wchar_t* dir, const PluginViewList* plugi
 									PluginUpdateInfo* incompatiblePlg = new PluginUpdateInfo(*pui);
 									incompatiblePlg->_version = v;
 									wchar_t msg[1024];
-									wsprintf(msg, incompatibleWarningWithSolution, incompatiblePlg->_displayName.c_str(), v.toString().c_str(), nppVer.toString().c_str(), pui->_version.toString().c_str());
+									::swprintf_s(msg, incompatibleWarningWithSolution, incompatiblePlg->_displayName.c_str(), v.toString().c_str(), nppVer.toString().c_str(), pui->_version.toString().c_str());
 									incompatiblePlg->_description = msg;
 									pluginIncompatibleList->pushBack(incompatiblePlg);
 								}
@@ -479,7 +479,7 @@ bool PluginsManager::loadPlugins(const wchar_t* dir, const PluginViewList* plugi
 									PluginUpdateInfo* incompatiblePlg = new PluginUpdateInfo(*pui2);
 									incompatiblePlg->_version = v2;
 									wchar_t msg[1024];
-									wsprintf(msg, incompatibleWarning, incompatiblePlg->_displayName.c_str(), v2.toString().c_str(), nppVer.toString().c_str());
+									::swprintf_s(msg, incompatibleWarning, incompatiblePlg->_displayName.c_str(), v2.toString().c_str(), nppVer.toString().c_str());
 									incompatiblePlg->_description = msg;
 									pluginIncompatibleList->pushBack(incompatiblePlg);
 								}
@@ -497,7 +497,7 @@ bool PluginsManager::loadPlugins(const wchar_t* dir, const PluginViewList* plugi
 										PluginUpdateInfo* incompatiblePlg = new PluginUpdateInfo(*pui2);
 										incompatiblePlg->_version = v2;
 										wchar_t msg[1024];
-										wsprintf(msg, incompatibleWarningWithSolution, incompatiblePlg->_displayName.c_str(), v2.toString().c_str(), nppVer.toString().c_str(), pui2->_version.toString().c_str());
+										::swprintf_s(msg, incompatibleWarningWithSolution, incompatiblePlg->_displayName.c_str(), v2.toString().c_str(), nppVer.toString().c_str(), pui2->_version.toString().c_str());
 										incompatiblePlg->_description = msg;
 										pluginIncompatibleList->pushBack(incompatiblePlg);
 									}

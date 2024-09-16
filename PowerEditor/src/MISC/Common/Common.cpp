@@ -42,7 +42,7 @@ using namespace std;
 void printInt(int int2print)
 {
 	wchar_t str[32];
-	wsprintf(str, L"%d", int2print);
+	::swprintf_s(str, L"%d", int2print);
 	::MessageBox(NULL, str, L"", MB_OK);
 }
 

@@ -4174,7 +4174,7 @@ intptr_t CALLBACK PrintSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 			wchar_t intStr[5]{};
 			for (int i = 6 ; i < 15 ; ++i)
 			{
-				wsprintf(intStr, L"%d", i);
+				::swprintf_s(intStr, L"%d", i);
 				::SendDlgItemMessage(_hSelf, IDC_COMBO_HFONTSIZE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(intStr));
 				::SendDlgItemMessage(_hSelf, IDC_COMBO_FFONTSIZE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(intStr));
 			}
@@ -4197,9 +4197,9 @@ intptr_t CALLBACK PrintSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 				index = 0;
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_FFONTNAME, CB_SETCURSEL, index, 0);
 
-			wsprintf(intStr, L"%d", nppGUI._printSettings._headerFontSize);
+			::swprintf_s(intStr, L"%d", nppGUI._printSettings._headerFontSize);
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_HFONTSIZE, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(intStr));
-			wsprintf(intStr, L"%d", nppGUI._printSettings._footerFontSize);
+			::swprintf_s(intStr, L"%d", nppGUI._printSettings._footerFontSize);
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_FFONTSIZE, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(intStr));
 
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_HBOLD, BM_SETCHECK, nppGUI._printSettings._headerFontStyle & FONTSTYLE_BOLD, 0);

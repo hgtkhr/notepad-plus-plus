@@ -19,6 +19,7 @@
 
 
 #include <shlwapi.h>
+#include <cstdio>
 #include "MiniDumper.h"
 
 LPCTSTR msgTitle = L"Notepad++ crash analysis";
@@ -65,20 +66,20 @@ bool MiniDumper::writeDump(EXCEPTION_POINTERS * pExceptionInfo)
 					BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL );
 					if (bOK)
 					{
-						wsprintf( szScratch, L"Saved dump file to '%s'", szDumpPath );
+						::swprintf_s( szScratch, L"Saved dump file to '%s'", szDumpPath );
 						szResult = szScratch;
 						retval = true;
 					}
 					else
 					{
-						wsprintf( szScratch, L"Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
+						::swprintf_s( szScratch, L"Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
 						szResult = szScratch;
 					}
 					::CloseHandle(hFile);
 				}
 				else
 				{
-					wsprintf( szScratch, L"Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
+					::swprintf_s( szScratch, L"Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
 					szResult = szScratch;
 				}
 			}

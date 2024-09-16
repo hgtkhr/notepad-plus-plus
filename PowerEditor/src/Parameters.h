@@ -694,7 +694,7 @@ public:
 	std::wstring toString() const // Return Notepad++ date format : YYYYMMDD
 	{
 		wchar_t dateStr[16];
-		wsprintf(dateStr, L"%04u%02u%02u", _year, _month, _day);
+		::swprintf_s(dateStr, L"%04u%02u%02u", _year, _month, _day);
 		return dateStr;
 	}
 
