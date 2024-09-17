@@ -566,7 +566,7 @@ void HashFromTextDlg::generateHashPerLine()
 						}
 
 						for (int i = 0; i < _ht; i++)
-							sprintf(hashStr + i * 2, "%02x", hash[i]);
+							::sprintf_s(hashStr + i * 2, 3, "%02x", hash[i]);
 
 						result += hashStr;
 						result += "\r\n";
@@ -606,7 +606,7 @@ void HashFromTextDlg::generateHashPerLine()
 					}
 
 					for ( int i = 0; i < _ht; i++ )
-						::sprintf_s( hashStr + i * 2, sizeof hashStr, "%02x", hash[i] );
+						::sprintf_s( hashStr + i * 2, 3, "%02x", hash[i] );
 
 					result += hashStr;
 					result += "\r\n";

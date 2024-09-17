@@ -1076,7 +1076,7 @@ void ScintillaEditView::setUserLexer(const wchar_t *userLangName)
 			continue;
 
 		char nestingBuffer[32];
-		sprintf(nestingBuffer, "userDefine.nesting.%02d", style._styleID);
+		::sprintf_s(nestingBuffer, "userDefine.nesting.%02d", style._styleID);
 		sprintf(intBuffer, "%d", style._nesting);
 		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>(nestingBuffer), reinterpret_cast<LPARAM>(intBuffer));
 

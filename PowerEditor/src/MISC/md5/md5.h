@@ -328,7 +328,7 @@ public:
     int pos ;
 
     for ( pos = 0 ; pos < 16 ; pos++ )
-      sprintf( digestChars+(pos*2), "%02x", digestRaw[pos] ) ;
+        ::sprintf_s( digestChars+(pos*2), 3, "%02x", digestRaw[pos] ) ;
   }
 
 
