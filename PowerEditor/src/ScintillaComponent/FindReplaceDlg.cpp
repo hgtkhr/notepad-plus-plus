@@ -3611,7 +3611,7 @@ void FindReplaceDlg::findAllIn(InWhat op)
 	if (justCreated)
 	{
 		// Send the address of _MarkingsStruct to the lexer
-		char ptrword[sizeof(void*) * 2 + 1];
+		char ptrword[sizeof(void*) * 2 + 3];
 		sprintf(ptrword, "%p", static_cast<void*>(&_pFinder->_markingsStruct));
 		_pFinder->_scintView.execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("@MarkingsStruct"), reinterpret_cast<LPARAM>(ptrword));
 
@@ -3745,7 +3745,7 @@ Finder * FindReplaceDlg::createFinder()
 	pFinder->setFinderStyleForNpc();
 
 	// Send the address of _MarkingsStruct to the lexer
-	char ptrword[sizeof(void*) * 2 + 1];
+	char ptrword[sizeof(void*) * 2 + 3];
 	sprintf(ptrword, "%p", static_cast<void*>(&pFinder->_markingsStruct));
 	pFinder->_scintView.execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("@MarkingsStruct"), reinterpret_cast<LPARAM>(ptrword));
 
@@ -5518,7 +5518,7 @@ void Finder::finishFilesSearch(int count, int searchedCount, bool searchedEntire
 	_scintView.execute(SCI_SETSEL, 0, 0);
 
 	//SCI_SETILEXER resets the lexer property @MarkingsStruct and then no data could be exchanged with the searchResult lexer
-	char ptrword[sizeof(void*) * 2 + 1];
+	char ptrword[sizeof(void*) * 2 + 3];
 	sprintf(ptrword, "%p", static_cast<void*>(&_markingsStruct));
 	_scintView.execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("@MarkingsStruct"), reinterpret_cast<LPARAM>(ptrword));
 
