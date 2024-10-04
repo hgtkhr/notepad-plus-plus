@@ -1911,10 +1911,18 @@ bool WinCNG_CalculateHash( PCWSTR pszAlgId, const void* input, std::size_t nInpu
 }
 #endif
 
-bool doesFileExist(const wchar_t* filePath)
+//----------------------------------------------------
+struct GetAttrParamResult
 {
-	GetAttrParamResult* inAndOut = static_cast<GetAttrParamResult*>(data);
-	inAndOut->_fileAttr = ::GetFileAttributesW(inAndOut->_filePath.c_str());
+	std::wstring _filePath;
+	DWORD _fileAttr = INVALID_FILE_ATTRIBUTES;
+	bool _isNetworkFailure = true;
+};
+
+DWORD WINAPI getFileAttributesWorker( void* data )
+{
+	GetAttrParamResult* inAndOut = static_cast< GetAttrParamResult* >( data );
+	inAndOut->_fileAttr = ::GetFileAttributesW( inAndOut->_filePath.c_str() );
 	inAndOut->_isNetworkFailure = false;
 	return TRUE;
 };
