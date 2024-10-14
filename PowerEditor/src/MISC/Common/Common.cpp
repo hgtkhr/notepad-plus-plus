@@ -22,10 +22,11 @@
 #include <locale>
 #include "StaticDialog.h"
 #include "CustomFileDialog.h"
+
 #include "FileInterface.h"
 #include "Common.h"
 #include "Utf8.h"
-#include "Parameters.h"
+#include <Parameters.h>
 #include "Buffer.h"
 
 #ifndef MPP_USE_ORIGINAL_CODE
