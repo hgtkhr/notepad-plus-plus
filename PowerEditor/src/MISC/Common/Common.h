@@ -63,9 +63,10 @@ void printInt(int int2print);
 void printStr(const wchar_t *str2print);
 std::wstring commafyInt(size_t n);
 
-void writeLog(const wchar_t *logFileName, const char *log2write);
+void writeLog(const wchar_t* logFileName, const char* log2write);
+void writeLog(const wchar_t* logFileName, const wchar_t* log2write);
 int filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
-std::wstring purgeMenuItemString(const wchar_t * menuItemStr, bool keepAmpersand = false);
+std::wstring purgeMenuItemString(const wchar_t* menuItemStr, bool keepAmpersand = false);
 std::vector<std::wstring> tokenizeString(const std::wstring & tokenString, const char delim);
 
 void ClientRectToScreenRect(HWND hWnd, RECT* rect);
@@ -291,9 +292,10 @@ private:
 	unsigned long _build = 0;
 };
 
-bool doesFileExist(const wchar_t* filePath, DWORD milleSec2wait = 0, bool* isNetWorkProblem = nullptr);
-bool doesDirectoryExist(const wchar_t* dirPath, DWORD milleSec2wait = 0, bool* isNetWorkProblem = nullptr);
-bool doesPathExist(const wchar_t* path, DWORD milleSec2wait = 0, bool* isNetWorkProblem = nullptr);
 
-DWORD getDiskFreeSpaceWaitSec(const wchar_t* dirPath, ULARGE_INTEGER* freeBytesForUser, DWORD milleSec2wait = 0, bool* isNetWorkProblem = nullptr);
-DWORD getFileAttributesExWaitSec(const wchar_t* filePath, WIN32_FILE_ATTRIBUTE_DATA* fileAttr, DWORD milleSec2wait = 0, bool* isNetWorkProblem = nullptr);
+DWORD getDiskFreeSpaceWithTimeout(const wchar_t* dirPath, ULARGE_INTEGER* freeBytesForUser, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
+DWORD getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUTE_DATA* fileAttr, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
+
+bool doesFileExist(const wchar_t* filePath, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
+bool doesDirectoryExist(const wchar_t* dirPath, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
+bool doesPathExist(const wchar_t* path, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
