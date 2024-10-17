@@ -1800,7 +1800,11 @@ bool Version::isCompatibleTo(const Version& from, const Version& to) const
 namespace
 {
 	constexpr NTSTATUS STATUS_UNSUCCESSFUL = 0xC0000001L;
-	constexpr bool NT_SUCCESS( NTSTATUS Status ) { return ( Status >= 0 ); }
+
+	constexpr bool NT_SUCCESS( NTSTATUS Status ) 
+	{
+		return ( Status >= 0 ); 
+	}
 
 	struct BCryptAlgorithmProviderDeleter
 	{
@@ -1904,7 +1908,7 @@ bool WinCNG_CalculateHash( PCWSTR pszAlgId, const void* input, std::size_t nInpu
 	}
 
 	//close the hash
-	status = BCryptFinishHash( handle_hash.get(), pHash, cbHash, 0 );
+	status = ::BCryptFinishHash( handle_hash.get(), pHash, cbHash, 0 );
 	if ( !NT_SUCCESS( status ) )
 	{
 		error_code = ::GetLastError();
