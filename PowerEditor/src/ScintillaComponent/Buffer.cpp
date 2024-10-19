@@ -835,7 +835,7 @@ BufferID FileManager::loadFile(const wchar_t* filename, Document doc, int encodi
 	}
 }
 #else
-BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encoding, const TCHAR* backupFileName, FILETIME fileNameTimestamp )
+BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encoding, const wchar_t* backupFileName, FILETIME fileNameTimestamp )
 {
 	if ( !filename )
 		return BUFFER_INVALID;
