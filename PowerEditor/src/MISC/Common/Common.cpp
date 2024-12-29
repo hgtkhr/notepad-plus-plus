@@ -18,7 +18,6 @@
 #include <shlwapi.h>
 #include <uxtheme.h>
 #include <cassert>
-#include <codecvt>
 #include <locale>
 #include "StaticDialog.h"
 #include "CustomFileDialog.h"
@@ -169,8 +168,7 @@ void writeLog(const wchar_t* logFileName, const char* log2write)
 		SYSTEMTIME currentTime = {};
 		::GetLocalTime(&currentTime);
 		wstring dateTimeStrW = getDateTimeStrFrom(L"yyyy-MM-dd HH:mm:ss", currentTime);
-		wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-		string log2writeStr = converter.to_bytes(dateTimeStrW);
+		string log2writeStr = wstring2string(dateTimeStrW, CP_UTF8);
 		log2writeStr += "  ";
 		log2writeStr += log2write;
 		log2writeStr += "\n";
@@ -888,17 +886,20 @@ bool str2Clipboard(const wstring &str2cpy, HWND hwnd)
 	{
 		return false;
 	}
+
 	if (!::OpenClipboard(hwnd))
 	{
 		::GlobalFree(hglbCopy);
 		return false;
 	}
+
 	if (!::EmptyClipboard())
 	{
 		::GlobalFree(hglbCopy);
 		::CloseClipboard();
 		return false;
 	}
+
 	// Lock the handle and copy the text to the buffer.
 	wchar_t *pStr = (wchar_t *)::GlobalLock(hglbCopy);
 	if (!pStr)
@@ -907,6 +908,7 @@ bool str2Clipboard(const wstring &str2cpy, HWND hwnd)
 		::CloseClipboard();
 		return false;
 	}
+
 	wcscpy_s(pStr, len2Allocate / sizeof(wchar_t), str2cpy.c_str());
 	::GlobalUnlock(hglbCopy);
 	// Place the handle on the clipboard.
@@ -917,6 +919,7 @@ bool str2Clipboard(const wstring &str2cpy, HWND hwnd)
 		::CloseClipboard();
 		return false;
 	}
+
 	if (!::CloseClipboard())
 	{
 		return false;
@@ -936,9 +939,11 @@ bool buf2Clipboard(const std::vector<Buffer*>& buffers, bool isFullPath, HWND hw
 			if (fileName)
 				selection += fileName;
 		}
+
 		if (!selection.empty() && !selection.ends_with(crlf))
 			selection += crlf;
 	}
+
 	if (!selection.empty())
 		return str2Clipboard(selection, hwnd);
 	return false;
@@ -1264,22 +1269,6 @@ bool isAssoCommandExisting(LPCTSTR FullPathName)
 
 	}
 	return isAssoCmdExist;
-}
-
-std::wstring s2ws(const std::string& str)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in Notepad++ string conversion s2ws!", L"Error in Notepad++ string conversion s2ws!");
-
-	return converterX.from_bytes(str);
-}
-
-std::string ws2s(const std::wstring& wstr)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in Notepad++ string conversion ws2s!", L"Error in Notepad++ string conversion ws2s!");
-
-	return converterX.to_bytes(wstr);
 }
 
 bool deleteFileOrFolder(const wstring& f2delete)
@@ -1985,6 +1974,7 @@ struct GetAttrExParamResult
 	wstring _filePath;
 	WIN32_FILE_ATTRIBUTE_DATA _attributes{};
 	BOOL _result = FALSE;
+	DWORD _error = NO_ERROR;
 	bool _isTimeoutReached = true;
 
 	GetAttrExParamResult(wstring filePath): _filePath(filePath) {
@@ -1995,12 +1985,16 @@ struct GetAttrExParamResult
 DWORD WINAPI getFileAttributesExWorker(void* data)
 {
 	GetAttrExParamResult* inAndOut = static_cast<GetAttrExParamResult*>(data);
+	::SetLastError(NO_ERROR);
 	inAndOut->_result = ::GetFileAttributesExW(inAndOut->_filePath.c_str(), GetFileExInfoStandard, &(inAndOut->_attributes));
+	if (!(inAndOut->_result))
+		inAndOut->_error = ::GetLastError();
 	inAndOut->_isTimeoutReached = false;
 	return ERROR_SUCCESS;
 };
 
-BOOL getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUTE_DATA* fileAttr, DWORD milliSec2wait, bool* isTimeoutReached)
+BOOL getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUTE_DATA* fileAttr,
+	DWORD milliSec2wait, bool* isTimeoutReached, DWORD* pdwWin32ApiError)
 {
 	GetAttrExParamResult data(filePath);
 
@@ -2024,12 +2018,15 @@ BOOL getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUT
 			::TerminateThread(hThread, dwWaitStatus);
 			break;
 	}
-	CloseHandle(hThread);
+	::CloseHandle(hThread);
 
 	*fileAttr = data._attributes;
 
 	if (isTimeoutReached != nullptr)
 		*isTimeoutReached = data._isTimeoutReached;
+
+	if (pdwWin32ApiError != nullptr)
+		*pdwWin32ApiError = data._error;
 
 	return data._result;
 }

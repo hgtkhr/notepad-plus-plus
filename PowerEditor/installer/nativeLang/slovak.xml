@@ -3,7 +3,7 @@
 	Slovak localization for Notepad++
 -->
 <NotepadPlus>
-	<Native-Langue name="Slovenčina" filename="slovak.xml" version="8.7.2">
+	<Native-Langue name="Slovenčina" filename="slovak.xml" version="8.7.5">
 		<Menu>
 			<Main>
 				<!-- Main Menu Entries -->
@@ -89,8 +89,9 @@
 					<Item id="41020" name="v Príkazovom riadku"/>
 					<Item id="41025" name="Priečinok ako pracovný priestor"/>
 					<Item id="41003" name="Zavrieť"/>
-					<Item id="41004" name="Z&amp;atvoriť všetko"/>
-					<Item id="41005" name="Zavrieť všetky okrem aktuálneho"/>
+					<Item id="41004" name="Z&amp;avrieť všetky"/>
+					<Item id="41005" name="Zavrieť všetky OKREM aktuálnej"/>
+					<Item id="41026" name="Zavrieť všetky OKREM pripnutých"/>
 					<Item id="41009" name="Zavrieť všetky vľavo"/>
 					<Item id="41018" name="Zavrieť všetky vpravo"/>
 					<Item id="41024" name="Zavrieť všetky nezmenené"/>
@@ -417,9 +418,11 @@
 				<Item CMDID="41003" name="Zavrieť"/>
 				<Item CMDID="0" name="Zavrieť viacero kariet"/>
 				<Item CMDID="41005" name="Zavrieť všetky OKREM tejto"/>
+				<Item CMDID="41026" name="Zavrieť všetky OKREM pripnutých"/>
 				<Item CMDID="41009" name="Zavrieť všetky vľavo"/>
 				<Item CMDID="41018" name="Zavrieť všetky vpravo"/>
 				<Item CMDID="41024" name="Zavrieť všetky nezmenené"/>
+				<Item CMDID="44048" name="Pripnúť kartu" alternativeName="Odopnúť kartu"/>
 				<Item CMDID="41006" name="Uložiť"/>
 				<Item CMDID="41008" name="Uložiť ako…"/>
 				<Item CMDID="1" name="Otvoriť do"/>
@@ -495,7 +498,6 @@
 				<Item id="1626" name="&amp;Rozšírený (\n, \r, \t, \0, \x…)"/>
 				<Item id="1660" name="Nahradiť v súboroch"/>
 				<Item id="1665" name="Nahradiť v projektoch"/>
-				<Item id="1661" name="Podľa aktuálneho dok."/>
 				<Item id="1662" name="Panel projektu 1"/>
 				<Item id="1663" name="Panel projektu 2"/>
 				<Item id="1664" name="Panel projektu 3"/>
@@ -951,9 +953,9 @@
 					<Item id="6106" name="Panel kariet"/>
 					<Item id="6107" name="Zmenšiť"/>
 					<Item id="6108" name="Zamknúť (Vypne Drag 'N' Drop)"/>
-					<Item id="6109" name="Stmaviť neaktívne karty"/>
+					<Item id="6109" name="Zmeniť farbu neaktívnej karty"/>
 					<Item id="6110" name="Farebne zvýrazniť aktívnu kartu"/>
-					<Item id="6112" name="Zobraziť tlačidlo zatvorenia na karte"/>
+					<Item id="6112" name="Zobraziť tlačidlo zatvorenia"/>
 					<Item id="6113" name="Dvojklikom zavrieť dokument"/>
 					<Item id="6115" name="Povoliť funkciu pripnúť kartu"/>
 					<Item id="6118" name="Skryť"/>
@@ -1185,6 +1187,7 @@
 					<Item id="6908" name="Vložiť označený text do vyhľadávacieho poľa"/>
 					<Item id="6909" name="Ak nie je nič označené, označiť slovo na pozícii kurzora"/>
 					<Item id="6910" name="Minimálna dĺžka na automatické začiarknutie &quot;Vo výbere&quot;:"/>
+					<Item id="6913" name="Vyplniť pole Priečinok v Hľadať v súboroch z aktívneho dokumentu"/>
 				</Searching>
 
 				<RecentFilesHistory title="História súborov">
@@ -1686,6 +1689,7 @@ Hľadá vo všetkých súboroch okrem priečinkov tests, bin &amp;&amp; bin64:
 Hľadá vo všetkých súboroch okrem všetkých priečinkov log alebo logs rekurzívne:
 *.* !+\log*"/>
 			<find-in-files-select-folder value="Vyberte priečinok, v ktorom chcete hľadať"/>
+			<find-in-files-dir-from-active-doc-tip value="Vyplniť pole Priečinok z aktívneho dokumentu"/>
 			<find-status-top-reached value="Hľadať: Dosiahnutý začiatok dokumentu, nájdený prvý výskyt zdola."/>
 			<find-status-end-reached value="Hľadať: Dosiahnutý koniec dokumentu, nájdený prvý výskyt zhora."/>
 			<find-status-replaceinfiles-1-replaced value="Nahradiť v súboroch: Bol nahradený 1 výskyt hľadaného výrazu."/>

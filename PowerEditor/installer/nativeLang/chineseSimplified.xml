@@ -496,7 +496,6 @@ Translation note:
 				<Item id="1626" name="扩展(&amp;X) (\n, \r, \t, \0, \x...)"/>
 				<Item id="1660" name="在文件中替换"/>
 				<Item id="1665" name="在工程中替换"/>
-				<Item id="1661" name="当前文件夹。"/>
 				<Item id="1662" name="工程面板1"/>
 				<Item id="1663" name="工程面板2"/>
 				<Item id="1664" name="工程面板3"/>
@@ -1102,10 +1101,24 @@ Translation note:
 					<Item id="6508" name="程序语言菜单"/>
 					<Item id="6301" name="制表符设置"/>
 					<Item id="6302" name="替换为空格"/>
-					<Item id="6303" name="制表符宽度: "/>
+					<Item id="6303" name="制表符宽度:"/>
 					<Item id="6510" name="使用默认值"/>
 					<Item id="6335" name="视反斜杠为 SQL 转义字符"/>
 				</Language>
+
+				<Indentation title="缩进">
+					<Item id="7161" name="自动缩进"/>
+					<Item id="7162" name="无"/>
+					<Item id="7163" name="基本"/>
+					<Item id="7164" name="高深"/>
+					<Item id="6301" name="缩进设置"/>
+					<Item id="6302" name="空格字符"/>
+					<Item id="6303" name="缩进大小:"/>
+					<Item id="6310" name="缩进方式:"/>
+					<Item id="6311" name="制表符"/>
+					<Item id="6510" name="使用默认值"/>
+					<Item id="6512" name="退格键取消缩进而不是删除单个空格"/>
+				</Indentation>
 
 				<Highlighting title="高亮">
 					<Item id="6351" name="用格式标记全部"/>
