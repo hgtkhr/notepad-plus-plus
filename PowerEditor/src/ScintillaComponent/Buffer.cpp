@@ -1157,7 +1157,22 @@ bool FileManager::reloadBuffer( BufferID id )
 	bool res;
 
 	//Get file size
-	std::int64_t fileSize = GetFileLength( buf->getFullPathName() );
+	int64_t fileSize = 0;
+	WIN32_FILE_ATTRIBUTE_DATA attributes {};
+	attributes.dwFileAttributes = INVALID_FILE_ATTRIBUTES;
+	getFileAttributesExWithTimeout( buf->getFullPathName(), &attributes );
+	if ( attributes.dwFileAttributes == INVALID_FILE_ATTRIBUTES )
+	{
+		return false;
+	}
+	else
+	{
+		LARGE_INTEGER size {};
+		size.LowPart = attributes.nFileSizeLow;
+		size.HighPart = attributes.nFileSizeHigh;
+
+		fileSize = size.QuadPart;
+	}
 
 	std::vector< char > buffer( blockSize + 8 ); // +8 for incomplete multibyte char
 
