@@ -574,13 +574,17 @@ bool Notepad_plus::doReload(BufferID id, bool alert)
 	if (mainVisisble)
 	{
 		_mainEditView.saveCurrentPos();
+		_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 		_mainEditView.execute(SCI_SETDOCPOINTER, 0, 0);
+		_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 	}
 
 	if (subVisisble)
 	{
 		_subEditView.saveCurrentPos();
+		_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 		_subEditView.execute(SCI_SETDOCPOINTER, 0, 0);
+		_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 	}
 
 	if (!mainVisisble && !subVisisble)
@@ -592,13 +596,17 @@ bool Notepad_plus::doReload(BufferID id, bool alert)
 	Buffer * pBuf = MainFileManager.getBufferByID(id);
 	if (mainVisisble)
 	{
+		_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 		_mainEditView.execute(SCI_SETDOCPOINTER, 0, pBuf->getDocument());
+		_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 		_mainEditView.restoreCurrentPosPreStep();
 	}
 
 	if (subVisisble)
 	{
+		_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 		_subEditView.execute(SCI_SETDOCPOINTER, 0, pBuf->getDocument());
+		_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 		_subEditView.restoreCurrentPosPreStep();
 	}
 
@@ -2120,20 +2128,23 @@ bool Notepad_plus::fileRename(BufferID id)
 
 bool Notepad_plus::fileRenameUntitledPluginAPI(BufferID id, const wchar_t* tabNewName)
 {
+	if (tabNewName == nullptr) return false;
+	
 	BufferID bufferID = id;
 	if (id == BUFFER_INVALID)
 	{
 		bufferID = _pEditView->getCurrentBufferID();
 	}
 
-	Buffer* buf = MainFileManager.getBufferByID(bufferID);
+	int bufferIndex = MainFileManager.getBufferIndexByID(bufferID);
+	if (bufferIndex == -1) return false;
 
-	if (!buf->isUntitled()) return false;
+	Buffer* buf = MainFileManager.getBufferByIndex(bufferIndex);
+
+	if (buf == nullptr || !buf->isUntitled()) return false;
 
 	// We are just going to rename the tab nothing else
 	// So just rename the tab and rename the backup file too if applicable
-
-	if (!tabNewName) return false;
 
 	std::wstring tabNewNameStr = tabNewName;
 
@@ -2473,12 +2484,16 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 			//Force in the document so we can add the markers
 			//Don't use default methods because of performance
 			Document prevDoc = _mainEditView.execute(SCI_GETDOCPOINTER);
+			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 			_mainEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
+			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			for (size_t j = 0, len = session._mainViewFiles[i]._marks.size(); j < len ; ++j)
 			{
 				_mainEditView.execute(SCI_MARKERADD, session._mainViewFiles[i]._marks[j], MARK_BOOKMARK);
 			}
+			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 			_mainEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
+			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			++i;
 		}
 		else
@@ -2604,12 +2619,16 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 			//Force in the document so we can add the markers
 			//Don't use default methods because of performance
 			Document prevDoc = _subEditView.execute(SCI_GETDOCPOINTER);
+			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 			_subEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
+			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			for (size_t j = 0, len = session._subViewFiles[k]._marks.size(); j < len ; ++j)
 			{
 				_subEditView.execute(SCI_MARKERADD, session._subViewFiles[k]._marks[j], MARK_BOOKMARK);
 			}
+			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
 			_subEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
+			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 
 			++k;
 		}
