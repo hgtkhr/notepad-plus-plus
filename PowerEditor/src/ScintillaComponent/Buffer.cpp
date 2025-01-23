@@ -959,7 +959,16 @@ BufferID FileManager::loadFile( const wchar_t* filename, Document doc, int encod
 
 	if ( pPath != nullptr )
 	{
-		fileSize = GetFileLength( pPath );
+		WIN32_FILE_ATTRIBUTE_DATA attributes {};
+		attributes.dwFileAttributes = INVALID_FILE_ATTRIBUTES;
+		if ( getFileAttributesExWithTimeout( pPath, &attributes ) )
+		{
+			LARGE_INTEGER size {};
+			size.LowPart = attributes.nFileSizeLow;
+			size.HighPart = attributes.nFileSizeHigh;
+
+			fileSize = size.QuadPart;
+		}
 	}
 
 	// * the auto-completion feature will be disabled for large files
