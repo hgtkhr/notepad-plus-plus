@@ -2474,7 +2474,7 @@ intptr_t CALLBACK MiscSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM)
 			bCheck = (nppGUI._fileAutoDetection & cdGo2end) ? true : false;
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_UPDATEGOTOEOF, BM_SETCHECK, bCheck ? BST_CHECKED : BST_UNCHECKED, 0);
 
-			::SendDlgItemMessage(_hSelf, IDC_COMBO_SYSTRAY_ACTION_HOICE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"No action to"));
+			::SendDlgItemMessage(_hSelf, IDC_COMBO_SYSTRAY_ACTION_HOICE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"No action on"));
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_SYSTRAY_ACTION_HOICE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"Minimize to"));
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_SYSTRAY_ACTION_HOICE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"Close to"));
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_SYSTRAY_ACTION_HOICE, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(L"Minimize / Close to"));
@@ -2487,6 +2487,7 @@ intptr_t CALLBACK MiscSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM)
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_DETECTENCODING, BM_SETCHECK, nppGUI._detectEncoding, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_SAVEALLCONFIRM, BM_SETCHECK, nppGUI._saveAllConfirm, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_AUTOUPDATE, BM_SETCHECK, nppGUI._autoUpdateOpt._doAutoUpdate, 0);
+			::EnableWindow(::GetDlgItem(_hSelf, IDC_CHECK_DIRECTWRITE_ENABLE), nppGUI._writeTechnologyEngine != directWriteTechnologyUnavailable);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_DIRECTWRITE_ENABLE, BM_SETCHECK, nppGUI._writeTechnologyEngine == directWriteTechnology, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_ENABLEDOCPEEKER, BM_SETCHECK, nppGUI._isDocPeekOnTab ? BST_CHECKED : BST_UNCHECKED, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_ENABLEDOCPEEKONMAP, BM_SETCHECK, nppGUI._isDocPeekOnMap ? BST_CHECKED : BST_UNCHECKED, 0);

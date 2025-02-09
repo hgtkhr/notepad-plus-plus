@@ -93,8 +93,7 @@ const bool fold_uncollapse = true;
 const bool fold_collapse = false;
 #define MAX_FOLD_COLLAPSE_LEVEL	8
 
-#define MODEVENTMASK_OFF         0
-#define MODEVENTMASK_ON          SC_MOD_DELETETEXT | SC_MOD_INSERTTEXT | SC_PERFORMED_UNDO | SC_PERFORMED_REDO | SC_MOD_CHANGEINDICATOR
+#define MODEVENTMASK_OFF 0
 
 enum TextCase : UCHAR
 {
@@ -167,7 +166,7 @@ const std::vector<std::vector<const char*>> g_ccUniEolChars =
 	{"\xC2\x87", "ESA", "U+0087"},           // U+0087 : End of Selected Area
 	{"\xC2\x88", "HTS", "U+0088"},           // U+0088 : Character (Horizontal) Tabulation Set
 	{"\xC2\x89", "HTJ", "U+0089"},           // U+0089 : Character (Horizontal) Tabulation With Justification
-	{"\xC2\x8A", "LTS", "U+008A"},           // U+008A : Line (Vertical) Tabulation Set
+	{"\xC2\x8A", "VTS", "U+008A"},           // U+008A : Vertical (Line) Tabulation Set
 	{"\xC2\x8B", "PLD", "U+008B"},           // U+008B : Partial Line Forward (Down)
 	{"\xC2\x8C", "PLU", "U+008C"},           // U+008C : Partial Line Backward (Up)
 	{"\xC2\x8D", "RI", "U+008D"},            // U+008D : Reverse Line Feed (Index)
@@ -846,6 +845,7 @@ public:
 			typeDoc == L_ASN1 || typeDoc == L_GDSCRIPT);
 	};
 
+	void setLanguage(LangType langType);
 	void defineDocType(LangType typeDoc);	//setup stylers for active document
 
 	void addCustomWordChars();
