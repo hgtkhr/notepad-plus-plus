@@ -5581,7 +5581,7 @@ void Finder::beginNewFilesSearch()
 	_nbFoundFiles = 0;
 
 	// fold all old searches (1st level only)
-	_scintView.collapse(searchHeaderLevel - SC_FOLDLEVELBASE, fold_collapse);
+	_scintView.foldLevel(searchHeaderLevel - SC_FOLDLEVELBASE, fold_collapse);
 }
 
 void Finder::finishFilesSearch(int count, int searchedCount, bool searchedEntireNotSelection, const FindOption* pFindOpt)
@@ -5726,7 +5726,7 @@ intptr_t CALLBACK Finder::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam
 
 				case NPPM_INTERNAL_SCINTILLAFINDERUNCOLLAPSE :
 				{
-					_scintView.foldAll(fold_uncollapse);
+					_scintView.foldAll(fold_expand);
 					return TRUE;
 				}
 

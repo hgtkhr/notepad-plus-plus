@@ -1498,6 +1498,21 @@ bool NppParameters::load()
 		isAllLoaded = false;
 	}
 
+	//---------------------------------------//
+	// toolbarButtonsConf.xml : for per user //
+	//---------------------------------------//
+	std::wstring toolbarButtonsConfXmlPath(_userPath);
+	pathAppend(toolbarButtonsConfXmlPath, L"toolbarButtonsConf.xml");
+
+	_pXmlToolButtonsConfDoc = new TiXmlDocument(toolbarButtonsConfXmlPath);
+	loadOkay = _pXmlToolButtonsConfDoc->LoadFile();
+	if (!loadOkay)
+	{
+		delete _pXmlToolButtonsConfDoc;
+		_pXmlToolButtonsConfDoc = nullptr;
+		isAllLoaded = false;
+	}
+
 	//------------------------------//
 	// shortcuts.xml : for per user //
 	//------------------------------//
@@ -1724,6 +1739,7 @@ void NppParameters::destroyInstance()
 
 	delete _pXmlNativeLangDocA;
 	delete _pXmlToolIconsDoc;
+	delete _pXmlToolButtonsConfDoc;
 	delete _pXmlShortcutDocA;
 	delete _pXmlContextMenuDocA;
 	delete _pXmlTabContextMenuDocA;
@@ -6214,7 +6230,22 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 
 			const wchar_t * optNameWriteTechnologyEngine = element->Attribute(L"writeTechnologyEngine");
 			if (optNameWriteTechnologyEngine)
-				_nppGUI._writeTechnologyEngine = (lstrcmp(optNameWriteTechnologyEngine, L"1") == 0) ? directWriteTechnology : defaultTechnology;
+			{
+				if (lstrcmp(optNameWriteTechnologyEngine, L"0") == 0)
+					_nppGUI._writeTechnologyEngine = defaultTechnology;
+				else if (lstrcmp(optNameWriteTechnologyEngine, L"1") == 0)
+					_nppGUI._writeTechnologyEngine = directWriteTechnology;
+				else if (lstrcmp(optNameWriteTechnologyEngine, L"2") == 0)
+					_nppGUI._writeTechnologyEngine = directWriteRetainTechnology;
+				else if (lstrcmp(optNameWriteTechnologyEngine, L"3") == 0)
+					_nppGUI._writeTechnologyEngine = directWriteDcTechnology;
+				else if (lstrcmp(optNameWriteTechnologyEngine, L"4") == 0)
+					_nppGUI._writeTechnologyEngine = directWriteDX11Technology;
+				else if (lstrcmp(optNameWriteTechnologyEngine, L"5") == 0)
+					_nppGUI._writeTechnologyEngine = directWriteTechnologyUnavailable;
+				//else
+					// retain default value preset
+			}
 
 			const wchar_t * optNameFolderDroppedOpenFiles = element->Attribute(L"isFolderDroppedOpenFiles");
 			if (optNameFolderDroppedOpenFiles)
@@ -8325,6 +8356,9 @@ int NppParameters::langTypeToCommandID(LangType lt) const
 
 		case L_TOML:
 			id = IDM_LANG_TOML; break;
+			
+		case L_SAS:
+			id = IDM_LANG_SAS; break;
 			
 		case L_SEARCHRESULT :
 			id = -1;	break;
