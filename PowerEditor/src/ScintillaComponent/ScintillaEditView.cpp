@@ -684,8 +684,8 @@ LRESULT ScintillaEditView::scintillaNew_Proc(HWND hwnd, UINT Message, WPARAM wPa
 			bool rightClickKeepsSelection = ((NppParameters::getInstance()).getSVP())._rightClickKeepsSelection;
 			if (rightClickKeepsSelection)
 			{
-				size_t clickX = GET_X_LPARAM(lParam);
-				size_t marginX = execute(SCI_POINTXFROMPOSITION, 0, 0);
+				LONG clickX = GET_X_LPARAM(lParam);
+				LONG marginX = static_cast<LONG>(execute(SCI_POINTXFROMPOSITION, 0, 0)) + static_cast<LONG>(execute(SCI_GETXOFFSET, 0, 0));
 				if (clickX >= marginX)
 				{
 					// if right-click in the editing area (not the margins!),
@@ -1717,33 +1717,6 @@ void ScintillaEditView::setNpcAndCcUniEOL(long color)
 	redraw();
 }
 
-void ScintillaEditView::setLanguage(LangType langType)
-{
-	unsigned long MODEVENTMASK_ON = NppParameters::getInstance().getScintillaModEventMask();
-
-	if (_currentBuffer->getLastLangType() > 0)
-	{
-		saveCurrentPos();
-		Document prev = execute(SCI_GETDOCPOINTER);
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, getBlankDocument());
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-
-		_currentBuffer->setLangType(langType);
-		
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, prev);
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-
-		maintainStateForNpc();
-		setCRLF();
-		restoreCurrentPosPreStep();
-	}
-	else
-	{
-		_currentBuffer->setLangType(langType);
-	}
-}
 
 void ScintillaEditView::defineDocType(LangType typeDoc)
 {
@@ -2160,16 +2133,6 @@ void ScintillaEditView::defineDocType(LangType typeDoc)
 	}
 }
 
-Document ScintillaEditView::getBlankDocument()
-{
-	if(_blankDocument==0)
-	{
-		_blankDocument=static_cast<Document>(execute(SCI_CREATEDOCUMENT,0,SC_DOCUMENTOPTION_TEXT_LARGE));
-		execute(SCI_ADDREFDOCUMENT,0,_blankDocument);
-	}
-	return _blankDocument;
-}
-
 BufferID ScintillaEditView::attachDefaultDoc()
 {
 	// get the doc pointer attached (by default) on the view Scintilla
@@ -2336,57 +2299,19 @@ void ScintillaEditView::activateBuffer(BufferID buffer, bool force)
 	// put the state into the future ex buffer
 	_currentBuffer->setHeaderLineState(lineStateVector, this);
 
-	_prevBuffer = _currentBuffer;
-
 	_currentBufferID = buffer;	//the magical switch happens here
 	_currentBuffer = newBuf;
 
-	const bool isSameLangType = (_prevBuffer != nullptr) && (_prevBuffer->getLangType() == _currentBuffer->getLangType()) &&
-		(_currentBuffer->getLangType() != L_USER ||	wcscmp(_prevBuffer->getUserDefineLangName(), _currentBuffer->getUserDefineLangName()) == 0);
-
-	const int currentLangInt = static_cast<int>(_currentBuffer->getLangType());
-	const bool isFirstActiveBuffer = (_currentBuffer->getLastLangType() != currentLangInt);
-
 	unsigned long MODEVENTMASK_ON = NppParameters::getInstance().getScintillaModEventMask();
-	if (isFirstActiveBuffer)  // Entering the tab for the 1st time
-	{
-		// change the doc, this operation will decrease
-		// the ref count of old current doc and increase the one of the new doc. FileManager should manage the rest
-		// Note that the actual reference in the Buffer itself is NOT decreased, Notepad_plus does that if neccessary
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, _currentBuffer->getDocument());
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 
-		// Due to execute(SCI_CLEARDOCUMENTSTYLE); in defineDocType() function
-		// defineDocType() function should be called here, but not be after the fold info loop
-		defineDocType(_currentBuffer->getLangType());
-	}
-	else if (isSameLangType) // After the 2nd entering with the same language type
-	{
-		// No need to call defineDocType() since it's the same language type
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, _currentBuffer->getDocument());
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
+	// change the doc, this operation will decrease
+	// the ref count of old current doc and increase the one of the new doc. FileManager should manage the rest
+	// Note that the actual reference in the Buffer itself is NOT decreased, Notepad_plus does that if neccessary
+	execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
+	execute(SCI_SETDOCPOINTER, 0, _currentBuffer->getDocument());
+	execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 
-		if (force)
-			defineDocType(_currentBuffer->getLangType());
-	}
-	else // Entering the tab for the 2nd or more times, with the different language type
-	{
-		// In order to improve the performance of switch-in on the 2nd or more times for the large files,
-		// a blank document is used for accelerate defineDocType() call.
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, getBlankDocument());
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-
-		defineDocType(_currentBuffer->getLangType());
-
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-		execute(SCI_SETDOCPOINTER, 0, _currentBuffer->getDocument());
-		execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-	}
-
-	_currentBuffer->setLastLangType(currentLangInt);
+	defineDocType(_currentBuffer->getLangType());
 
 	setWordChars();
 	maintainStateForNpc();
@@ -3143,10 +3068,9 @@ void ScintillaEditView::performGlobalStyles()
 	}
 	setElementColour(SC_ELEMENT_SELECTION_ADDITIONAL_BACK, selectMultiSelectColorBack);
 
-	if (nppParams.isSelectFgColorEnabled())
+	if (svp._selectedTextForegroundSingleColor)
 	{
-		//execute(SCI_SETSELFORE, 1, selectColorFore);
-		setElementColour(SC_ELEMENT_SELECTION_TEXT, selectColorFore);  // SCI_SETSELFORE is deprecated
+		setElementColour(SC_ELEMENT_SELECTION_TEXT, selectColorFore);
 		setElementColour(SC_ELEMENT_SELECTION_INACTIVE_TEXT, selectColorFore);
 		setElementColour(SC_ELEMENT_SELECTION_ADDITIONAL_TEXT, selectColorFore);
 	}

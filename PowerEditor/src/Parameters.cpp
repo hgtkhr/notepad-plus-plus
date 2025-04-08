@@ -1655,20 +1655,6 @@ bool NppParameters::load()
 				delete _pXmlExternalLexerDoc[i];
 	}
 
-	//-------------------------------------------------------------//
-	// enableSelectFgColor.xml : for per user                      //
-	// This empty xml file is optional - user adds this empty file //
-	// manually in order to set selected text's foreground color.  //
-	//-------------------------------------------------------------//
-	std::wstring enableSelectFgColorPath = _userPath;
-	pathAppend(enableSelectFgColorPath, L"enableSelectFgColor.xml");
-
-	if (doesFileExist(enableSelectFgColorPath.c_str()))
-	{
-		_isSelectFgColorEnabled = true;
-	}
-
-
 	std::wstring filePath, filePath2, issueFileName;
 	//-------------------------------------------------------------//
 	// nppLogNetworkDriveIssue.xml                                 //
@@ -4880,13 +4866,15 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 		{
 			bool isFailed = false;
 			int oldValue = _nppGUI._tabStatus;
+			_nppGUI._tabStatus = 0;
+
 			const wchar_t* val = element->Attribute(L"dragAndDrop");
 			if (val)
 			{
 				if (!lstrcmp(val, L"yes"))
-					_nppGUI._tabStatus = TAB_DRAGNDROP;
+					_nppGUI._tabStatus |= TAB_DRAGNDROP;
 				else if (!lstrcmp(val, L"no"))
-					_nppGUI._tabStatus = 0;
+					_nppGUI._tabStatus |= 0;
 				else
 					isFailed = true;
 			}
@@ -4948,6 +4936,17 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 			else
 			{
 				_nppGUI._tabStatus |= TAB_PINBUTTON;
+			}
+
+			val = element->Attribute(L"showOnlyPinnedButton");
+			if (val)
+			{
+				if (!lstrcmp(val, L"yes"))
+					_nppGUI._tabStatus |= TAB_SHOWONLYPINNEDBUTTON;
+				else if (!lstrcmp(val, L"no"))
+					_nppGUI._tabStatus |= 0;
+				else
+					isFailed = true;
 			}
 
 			val = element->Attribute(L"buttonsOninactiveTabs");
@@ -6637,6 +6636,16 @@ void NppParameters::feedScintillaParam(TiXmlNode *node)
 			_svp._rightClickKeepsSelection = false;
 	}
 
+	// Make selected text foreground single color
+	nm = element->Attribute(L"selectedTextForegroundSingleColor");
+	if (nm)
+	{
+		if (!lstrcmp(nm, L"yes"))
+			_svp._selectedTextForegroundSingleColor = true;
+		else if (!lstrcmp(nm, L"no"))
+			_svp._selectedTextForegroundSingleColor = false;
+	}
+
 	// Disable Advanced Scrolling
 	nm = element->Attribute(L"disableAdvancedScrolling");
 	if (nm)
@@ -6745,7 +6754,7 @@ void NppParameters::feedScintillaParam(TiXmlNode *node)
 
 	_svp._npcCustomColor = parseYesNoBoolAttribute(L"npcCustomColor");
 	_svp._npcIncludeCcUniEol = parseYesNoBoolAttribute(L"npcIncludeCcUniEOL");
-	_svp._npcNoInputC0 = parseYesNoBoolAttribute(L"npcNoInputC0");
+	_svp._npcNoInputC0 = parseYesNoBoolAttribute(L"npcNoInputC0", true);
 
 	// C0, C1 control and Unicode EOL visibility state
 	_svp._ccUniEolShow = parseYesNoBoolAttribute(L"ccShow", true);
@@ -7181,6 +7190,7 @@ bool NppParameters::writeScintillaParams()
 	(scintNode->ToElement())->SetAttribute(L"virtualSpace", _svp._virtualSpace ? L"yes" : L"no");
 	(scintNode->ToElement())->SetAttribute(L"scrollBeyondLastLine", _svp._scrollBeyondLastLine ? L"yes" : L"no");
 	(scintNode->ToElement())->SetAttribute(L"rightClickKeepsSelection", _svp._rightClickKeepsSelection ? L"yes" : L"no");
+	(scintNode->ToElement())->SetAttribute(L"selectedTextForegroundSingleColor", _svp._selectedTextForegroundSingleColor ? L"yes" : L"no");
 	(scintNode->ToElement())->SetAttribute(L"disableAdvancedScrolling", _svp._disableAdvancedScrolling ? L"yes" : L"no");
 	(scintNode->ToElement())->SetAttribute(L"wrapSymbolShow", _svp._wrapSymbolShow ? L"show" : L"hide");
 	(scintNode->ToElement())->SetAttribute(L"Wrap", _svp._doWrap ? L"yes" : L"no");
@@ -7295,15 +7305,15 @@ void NppParameters::createXmlTreeFromGUIParams()
 		GUIConfigElement->InsertEndChild(TiXmlText(pStr));
 	}
 
-	// <GUIConfig name="TabBar" dragAndDrop="yes" drawTopBar="yes" drawInactiveTab="yes" reduce="yes" closeButton="yes" doubleClick2Close="no" vertical="no" multiLine="no" hide="no" quitOnEmpty="no" iconSetNumber="0" />
+	// <GUIConfig name="TabBar" dragAndDrop="yes" drawTopBar="yes" drawInactiveTab="yes" reduce="yes" closeButton="yes" pinButton="yes" showOnlyPinnedButton="no" buttonsOninactiveTabs="no" doubleClick2Close="no" vertical="no" multiLine="no" hide="no" quitOnEmpty="no" iconSetNumber="0" />
 	{
 		TiXmlElement *GUIConfigElement = (newGUIRoot->InsertEndChild(TiXmlElement(L"GUIConfig")))->ToElement();
 		GUIConfigElement->SetAttribute(L"name", L"TabBar");
 
-		const wchar_t *pStr = (_nppGUI._tabStatus & TAB_DRAWTOPBAR) ? L"yes" : L"no";
+		const wchar_t *pStr = (_nppGUI._tabStatus & TAB_DRAGNDROP) ? L"yes" : L"no";
 		GUIConfigElement->SetAttribute(L"dragAndDrop", pStr);
 
-		pStr = (_nppGUI._tabStatus & TAB_DRAGNDROP) ? L"yes" : L"no";
+		pStr = (_nppGUI._tabStatus & TAB_DRAWTOPBAR) ? L"yes" : L"no";
 		GUIConfigElement->SetAttribute(L"drawTopBar", pStr);
 
 		pStr = (_nppGUI._tabStatus & TAB_DRAWINACTIVETAB) ? L"yes" : L"no";
@@ -7317,6 +7327,9 @@ void NppParameters::createXmlTreeFromGUIParams()
 
 		pStr = (_nppGUI._tabStatus & TAB_PINBUTTON) ? L"yes" : L"no";
 		GUIConfigElement->SetAttribute(L"pinButton", pStr);
+
+		pStr = (_nppGUI._tabStatus & TAB_SHOWONLYPINNEDBUTTON) ? L"yes" : L"no";
+		GUIConfigElement->SetAttribute(L"showOnlyPinnedButton", pStr);
 
 		pStr = (_nppGUI._tabStatus & TAB_INACTIVETABSHOWBUTTON) ? L"yes" : L"no";
 		GUIConfigElement->SetAttribute(L"buttonsOninactiveTabs", pStr);
