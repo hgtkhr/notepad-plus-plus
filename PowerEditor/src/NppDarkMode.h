@@ -19,15 +19,18 @@
 #include <string>
 #include <windows.h>
 
+enum class FluentColor;
+struct TbIconInfo;
+struct AdvancedOptions;
 
 namespace NppDarkMode
 {
 	struct Colors
 	{
 		COLORREF background = 0;
-		COLORREF softerBackground = 0;
+		COLORREF softerBackground = 0; // ctrl background color
 		COLORREF hotBackground = 0;
-		COLORREF pureBackground = 0;
+		COLORREF pureBackground = 0;   // dlg background color
 		COLORREF errorBackground = 0;
 		COLORREF text = 0;
 		COLORREF darkerText = 0;
@@ -79,22 +82,6 @@ namespace NppDarkMode
 		dark = 2
 	};
 
-	struct AdvOptDefaults
-	{
-		std::wstring _xmlFileName;
-		int _toolBarIconSet = -1;
-		int _tabIconSet = -1;
-		bool _tabUseTheme = false;
-	};
-
-	struct AdvancedOptions
-	{
-		bool _enableWindowsMode = false;
-
-		NppDarkMode::AdvOptDefaults _darkDefaults{ L"DarkModeDefault.xml", 0, 2, false };
-		NppDarkMode::AdvOptDefaults _lightDefaults{ L"", 4, 0, true };
-	};
-
 	constexpr UINT WM_SETBUTTONIDEALSIZE = (WM_USER + 4200);
 
 	void initDarkMode();				// pulls options from NppParameters
@@ -112,8 +99,16 @@ namespace NppDarkMode
 	void setWindowsMode(bool enable);
 	std::wstring getThemeName();
 	void setThemeName(const std::wstring& newThemeName);
-	int getToolBarIconSet(bool useDark);
-	void setToolBarIconSet(int state2Set, bool useDark);
+	TbIconInfo getToolbarIconInfo(bool useDark);
+	TbIconInfo getToolbarIconInfo();
+	void setToolbarIconSet(int state2Set, bool useDark);
+	void setToolbarIconSet(int state2Set);
+	void setToolbarFluentColor(FluentColor color2Set, bool useDark);
+	void setToolbarFluentColor(FluentColor color2Set);
+	void setToolbarFluentMonochrome(bool setMonochrome, bool useDark);
+	void setToolbarFluentMonochrome(bool setMonochrome);
+	void setToolbarFluentCustomColor(COLORREF color, bool useDark);
+	void setToolbarFluentCustomColor(COLORREF color);
 	int getTabIconSet(bool useDark);
 	void setTabIconSet(bool useAltIcons, bool useDark);
 	bool useTabTheme();
@@ -127,6 +122,9 @@ namespace NppDarkMode
 	double calculatePerceivedLightness(COLORREF c);
 
 	void setDarkTone(ColorTone colorToneChoice);
+
+	COLORREF getAccentColor(bool useDark);
+	COLORREF getAccentColor();
 
 	COLORREF getBackgroundColor();
 	COLORREF getCtrlBackgroundColor();
@@ -193,6 +191,7 @@ namespace NppDarkMode
 	// enhancements to DarkMode.h
 	void enableDarkScrollBarForWindowAndChildren(HWND hwnd);
 
+	void paintRoundRect(HDC hdc, const RECT rect, const HPEN hpen, const HBRUSH hBrush, int width = 0, int height = 0);
 	inline void paintRoundFrameRect(HDC hdc, const RECT rect, const HPEN hpen, int width = 0, int height = 0);
 
 	void subclassButtonControl(HWND hwnd);
@@ -215,6 +214,7 @@ namespace NppDarkMode
 
 	void autoSubclassAndThemePluginDockWindow(HWND hwnd);
 	ULONG autoSubclassAndThemePlugin(HWND hwnd, ULONG dmFlags);
+	void autoSubclassCtlColor(HWND hWnd);
 	void autoSubclassAndThemeWindowNotify(HWND hwnd);
 
 	void setDarkTitleBar(HWND hwnd);
@@ -239,5 +239,6 @@ namespace NppDarkMode
 	LRESULT onCtlColorDlg(HDC hdc);
 	LRESULT onCtlColorError(HDC hdc);
 	LRESULT onCtlColorDlgStaticText(HDC hdc, bool isTextEnabled);
+	LRESULT onCtlColorDlgLinkText(HDC hdc, bool isTextEnabled = true);
 	LRESULT onCtlColorListbox(WPARAM wParam, LPARAM lParam);
 }

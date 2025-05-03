@@ -131,6 +131,8 @@ static const WinMenuKeyDefinition winKeyDefs[] =
 	{ VK_NULL,    IDM_EDIT_SORTLINES_LEXICOGRAPHIC_DESCENDING,  false, false, false, nullptr },
 	{ VK_NULL,    IDM_EDIT_SORTLINES_LEXICO_CASE_INSENS_ASCENDING,   false, false, false, nullptr },
 	{ VK_NULL,    IDM_EDIT_SORTLINES_LEXICO_CASE_INSENS_DESCENDING,  false, false, false, nullptr },
+	{ VK_NULL,    IDM_EDIT_SORTLINES_LOCALE_ASCENDING,          false, false, false, nullptr },
+	{ VK_NULL,    IDM_EDIT_SORTLINES_LOCALE_DESCENDING,         false, false, false, nullptr },
 	{ VK_NULL,    IDM_EDIT_SORTLINES_INTEGER_ASCENDING,         false, false, false, nullptr },
 	{ VK_NULL,    IDM_EDIT_SORTLINES_INTEGER_DESCENDING,        false, false, false, nullptr },
 	{ VK_NULL,    IDM_EDIT_SORTLINES_DECIMALCOMMA_ASCENDING,    false, false, false, nullptr },
@@ -1429,7 +1431,7 @@ bool NppParameters::load()
 
 	for (const auto& i : udlFiles)
 	{
-		auto udlDoc = new TiXmlDocument(i);
+		TiXmlDocument* udlDoc = new TiXmlDocument(i);
 		loadOkay = udlDoc->LoadFile();
 		if (!loadOkay)
 		{
@@ -1480,21 +1482,6 @@ bool NppParameters::load()
 	{
 		delete _pXmlNativeLangDocA;
 		_pXmlNativeLangDocA = nullptr;
-		isAllLoaded = false;
-	}
-
-	//---------------------------------//
-	// toolbarIcons.xml : for per user //
-	//---------------------------------//
-	std::wstring toolbarIconsPath(_userPath);
-	pathAppend(toolbarIconsPath, L"toolbarIcons.xml");
-
-	_pXmlToolIconsDoc = new TiXmlDocument(toolbarIconsPath);
-	loadOkay = _pXmlToolIconsDoc->LoadFile();
-	if (!loadOkay)
-	{
-		delete _pXmlToolIconsDoc;
-		_pXmlToolIconsDoc = nullptr;
 		isAllLoaded = false;
 	}
 
@@ -1724,7 +1711,6 @@ void NppParameters::destroyInstance()
 	}
 
 	delete _pXmlNativeLangDocA;
-	delete _pXmlToolIconsDoc;
 	delete _pXmlToolButtonsConfDoc;
 	delete _pXmlShortcutDocA;
 	delete _pXmlContextMenuDocA;
@@ -4813,23 +4799,51 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 				else// if (!lstrcmp(val, L"yes"))
 					_nppGUI._toolbarShow = true;
 			}
+
+			int i = 0;
+			val = element->Attribute(L"fluentColor", &i);
+			if (val)
+			{
+				auto& tbColor = _nppGUI._tbIconInfo._tbColor;
+				tbColor = static_cast<FluentColor>(i);
+			}
+
+			val = element->Attribute(L"fluentCustomColor", &i);
+			if (val)
+			{
+				auto& tbColor = _nppGUI._tbIconInfo._tbCustomColor;
+				tbColor = i;
+			}
+
+			val = element->Attribute(L"fluentMono");
+			if (val)
+			{
+				auto& tbMono = _nppGUI._tbIconInfo._tbUseMono;
+				if (!lstrcmp(val, L"no"))
+					tbMono = false;
+				else// if (!lstrcmp(val, L"yes"))
+					tbMono = true;
+			}
+
 			TiXmlNode *n = childNode->FirstChild();
 			if (n)
 			{
 				val = n->Value();
 				if (val)
 				{
+					auto& tbIconSet = _nppGUI._tbIconInfo._tbIconSet;
 					if (!lstrcmp(val, L"small"))
-						_nppGUI._toolBarStatus = TB_SMALL;
+						tbIconSet = TB_SMALL;
 					else if (!lstrcmp(val, L"large"))
-						_nppGUI._toolBarStatus = TB_LARGE;
+						tbIconSet = TB_LARGE;
 					else if (!lstrcmp(val, L"small2"))
-						_nppGUI._toolBarStatus = TB_SMALL2;
+						tbIconSet = TB_SMALL2;
 					else if (!lstrcmp(val, L"large2"))
-						_nppGUI._toolBarStatus = TB_LARGE2;
+						tbIconSet = TB_LARGE2;
 					else //if (!lstrcmp(val, L"standard"))
-						_nppGUI._toolBarStatus = TB_STANDARD;
+						tbIconSet = TB_STANDARD;
 				}
+
 			}
 		}
 		else if (!lstrcmp(nm, L"StatusBar"))
@@ -6359,20 +6373,20 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 				return defaultName;
 			};
 
-			auto parseToolBarIconsAttribute = [&element](const wchar_t* name, int defaultValue = -1) -> int {
+			auto parseMinMaxAttribute = [&element](const wchar_t* name, int defaultValue = -1, int maxValue = 2, int minValue = 0) -> int {
 				int val;
 				const wchar_t* valStr = element->Attribute(name, &val);
-				if (valStr != nullptr && (val >= 0 && val <= 4))
+				if (valStr != nullptr && (val >= minValue && val <= maxValue))
 				{
 					return val;
 				}
 				return defaultValue;
 			};
 
-			auto parseTabIconsAttribute = [&element](const wchar_t* name, int defaultValue = -1) -> int {
+			auto parseIntAttribute = [&element](const wchar_t* name, int defaultValue = -1) -> int {
 				int val;
 				const wchar_t* valStr = element->Attribute(name, &val);
-				if (valStr != nullptr && (val >= 0 && val <= 2))
+				if (valStr != nullptr)
 				{
 					return val;
 				}
@@ -6382,18 +6396,29 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 			auto& windowsMode = _nppGUI._darkmode._advOptions._enableWindowsMode;
 			windowsMode = parseYesNoBoolAttribute(L"enableWindowsMode");
 
+			constexpr int fluentColorMaxValue = static_cast<int>(FluentColor::maxValue) - 1;
+			constexpr int tbStdIcoSet = static_cast<int>(TB_STANDARD);
+
 			auto& darkDefaults = _nppGUI._darkmode._advOptions._darkDefaults;
 			auto& darkThemeName = darkDefaults._xmlFileName;
+			auto& darkTbInfo = darkDefaults._tbIconInfo;
 			darkThemeName = parseStringAttribute(L"darkThemeName", L"DarkModeDefault.xml");
-			darkDefaults._toolBarIconSet = parseToolBarIconsAttribute(L"darkToolBarIconSet", 0);
-			darkDefaults._tabIconSet = parseTabIconsAttribute(L"darkTabIconSet", 2);
+			darkTbInfo._tbIconSet = static_cast<toolBarStatusType>(parseMinMaxAttribute(L"darkToolBarIconSet", static_cast<int>(TB_SMALL), tbStdIcoSet));
+			darkTbInfo._tbColor = static_cast<FluentColor>(parseMinMaxAttribute(L"darkTbFluentColor", 0, fluentColorMaxValue));
+			darkTbInfo._tbCustomColor = parseIntAttribute(L"darkTbFluentCustomColor", 0);
+			darkTbInfo._tbUseMono = parseYesNoBoolAttribute(L"darkTbFluentMono");
+			darkDefaults._tabIconSet = parseMinMaxAttribute(L"darkTabIconSet", 2);
 			darkDefaults._tabUseTheme = parseYesNoBoolAttribute(L"darkTabUseTheme");
 
 			auto& lightDefaults = _nppGUI._darkmode._advOptions._lightDefaults;
 			auto& lightThemeName = lightDefaults._xmlFileName;
+			auto& lightTbInfo = lightDefaults._tbIconInfo;
 			lightThemeName = parseStringAttribute(L"lightThemeName");
-			lightDefaults._toolBarIconSet = parseToolBarIconsAttribute(L"lightToolBarIconSet", 4);
-			lightDefaults._tabIconSet = parseTabIconsAttribute(L"lightTabIconSet", 0);
+			lightTbInfo._tbIconSet = static_cast<toolBarStatusType>(parseMinMaxAttribute(L"lightToolBarIconSet", tbStdIcoSet, tbStdIcoSet));
+			lightTbInfo._tbColor = static_cast<FluentColor>(parseMinMaxAttribute(L"lightTbFluentColor", 0, fluentColorMaxValue));
+			lightTbInfo._tbCustomColor = parseIntAttribute(L"lightTbFluentCustomColor", 0);
+			lightTbInfo._tbUseMono = parseYesNoBoolAttribute(L"lightTbFluentMono");
+			lightDefaults._tabIconSet = parseMinMaxAttribute(L"lightTabIconSet", 0);
 			lightDefaults._tabUseTheme = parseYesNoBoolAttribute(L"lightTabUseTheme", true);
 
 			// Windows mode is handled later in Notepad_plus_Window::init from Notepad_plus_Window.cpp
@@ -7280,20 +7305,48 @@ void NppParameters::createXmlTreeFromGUIParams()
 	// <GUIConfig name="ToolBar" visible="yes">standard</GUIConfig>
 	{
 		TiXmlElement *GUIConfigElement = (newGUIRoot->InsertEndChild(TiXmlElement(L"GUIConfig")))->ToElement();
+		auto& nppGUITbInfo = _nppGUI._tbIconInfo;
 		GUIConfigElement->SetAttribute(L"name", L"ToolBar");
-		const wchar_t *pStr = (_nppGUI._toolbarShow) ? L"yes" : L"no";
+		const wchar_t* pStr = (_nppGUI._toolbarShow) ? L"yes" : L"no";
 		GUIConfigElement->SetAttribute(L"visible", pStr);
+		GUIConfigElement->SetAttribute(L"fluentColor", static_cast<int>(nppGUITbInfo._tbColor));
+		GUIConfigElement->SetAttribute(L"fluentCustomColor", nppGUITbInfo._tbCustomColor);
+		pStr = (nppGUITbInfo._tbUseMono) ? L"yes" : L"no";
+		GUIConfigElement->SetAttribute(L"fluentMono", pStr);
 
-		if (_nppGUI._toolBarStatus == TB_SMALL)
-			pStr = L"small";
-		else if (_nppGUI._toolBarStatus == TB_LARGE)
-			pStr = L"large";
-		else if (_nppGUI._toolBarStatus == TB_SMALL2)
-			pStr = L"small2";
-		else if (_nppGUI._toolBarStatus == TB_LARGE2)
-			pStr = L"large2";
-		else //if (_nppGUI._toolBarStatus == TB_STANDARD)
-			pStr = L"standard";
+		switch (nppGUITbInfo._tbIconSet)
+		{
+			case TB_SMALL:
+			{
+				pStr = L"small";
+				break;
+			}
+
+			case TB_LARGE:
+			{
+				pStr = L"large";
+				break;
+			}
+
+			case TB_SMALL2:
+			{
+				pStr = L"small2";
+				break;
+			}
+
+			case TB_LARGE2:
+			{
+				pStr = L"large2";
+				break;
+			}
+
+			case TB_STANDARD:
+			default:
+			{
+				pStr = L"standard";
+				break;
+			}
+		}
 		GUIConfigElement->InsertEndChild(TiXmlText(pStr));
 	}
 
@@ -7857,17 +7910,30 @@ void NppParameters::createXmlTreeFromGUIParams()
 		GUIConfigElement->SetAttribute(L"customColorDisabledEdge", _nppGUI._darkmode._customColors.disabledEdge);
 
 		// advanced options section
-		setYesNoBoolAttribute(L"enableWindowsMode", _nppGUI._darkmode._advOptions._enableWindowsMode);
+		const auto& advOpt = _nppGUI._darkmode._advOptions;
+		setYesNoBoolAttribute(L"enableWindowsMode", advOpt._enableWindowsMode);
 
-		GUIConfigElement->SetAttribute(L"darkThemeName", _nppGUI._darkmode._advOptions._darkDefaults._xmlFileName.c_str());
-		GUIConfigElement->SetAttribute(L"darkToolBarIconSet", _nppGUI._darkmode._advOptions._darkDefaults._toolBarIconSet);
-		GUIConfigElement->SetAttribute(L"darkTabIconSet", _nppGUI._darkmode._advOptions._darkDefaults._tabIconSet);
-		setYesNoBoolAttribute(L"darkTabUseTheme", _nppGUI._darkmode._advOptions._darkDefaults._tabUseTheme);
+		const auto& darkDefaults = advOpt._darkDefaults;
+		auto& darkThemeName = darkDefaults._xmlFileName;
+		auto& darkTbInfo = darkDefaults._tbIconInfo;
+		GUIConfigElement->SetAttribute(L"darkThemeName", darkThemeName.c_str());
+		GUIConfigElement->SetAttribute(L"darkToolBarIconSet", darkTbInfo._tbIconSet);
+		GUIConfigElement->SetAttribute(L"darkTbFluentColor", static_cast<int>(darkTbInfo._tbColor));
+		GUIConfigElement->SetAttribute(L"darkTbFluentCustomColor", darkTbInfo._tbCustomColor);
+		setYesNoBoolAttribute(L"darkTbFluentMono", darkTbInfo._tbUseMono);
+		GUIConfigElement->SetAttribute(L"darkTabIconSet", darkDefaults._tabIconSet);
+		setYesNoBoolAttribute(L"darkTabUseTheme", darkDefaults._tabUseTheme);
 
-		GUIConfigElement->SetAttribute(L"lightThemeName", _nppGUI._darkmode._advOptions._lightDefaults._xmlFileName.c_str());
-		GUIConfigElement->SetAttribute(L"lightToolBarIconSet", _nppGUI._darkmode._advOptions._lightDefaults._toolBarIconSet);
-		GUIConfigElement->SetAttribute(L"lightTabIconSet", _nppGUI._darkmode._advOptions._lightDefaults._tabIconSet);
-		setYesNoBoolAttribute(L"lightTabUseTheme", _nppGUI._darkmode._advOptions._lightDefaults._tabUseTheme);
+		const auto& lightDefaults = advOpt._lightDefaults;
+		const auto& lightThemeName = lightDefaults._xmlFileName;
+		const auto& lightTbInfo = lightDefaults._tbIconInfo;
+		GUIConfigElement->SetAttribute(L"lightThemeName", lightThemeName.c_str());
+		GUIConfigElement->SetAttribute(L"lightToolBarIconSet", lightTbInfo._tbIconSet);
+		GUIConfigElement->SetAttribute(L"lightTbFluentColor", static_cast<int>(lightTbInfo._tbColor));
+		GUIConfigElement->SetAttribute(L"lightTbFluentCustomColor", lightTbInfo._tbCustomColor);
+		setYesNoBoolAttribute(L"lightTbFluentMono", lightTbInfo._tbUseMono);
+		GUIConfigElement->SetAttribute(L"lightTabIconSet", lightDefaults._tabIconSet);
+		setYesNoBoolAttribute(L"lightTabUseTheme", lightDefaults._tabUseTheme);
 	}
 
 	// <GUIConfig name="ScintillaPrimaryView" lineNumberMargin="show" bookMarkMargin="show" indentGuideLine="show" folderMarkStyle="box" lineWrapMethod="aligned" currentLineHilitingShow="show" scrollBeyondLastLine="no" rightClickKeepsSelection="no" disableAdvancedScrolling="no" wrapSymbolShow="hide" Wrap="no" borderEdge="yes" edge="no" edgeNbColumn="80" zoom="0" zoom2="0" whiteSpaceShow="hide" eolShow="hide" borderWidth="2" smoothFont="no" />
@@ -8373,6 +8439,9 @@ int NppParameters::langTypeToCommandID(LangType lt) const
 		case L_SAS:
 			id = IDM_LANG_SAS; break;
 			
+		case L_ERRORLIST:
+			id = IDM_LANG_ERRORLIST; break;
+			
 		case L_SEARCHRESULT :
 			id = -1;	break;
 
@@ -8546,6 +8615,26 @@ bool NppParameters::insertTabInfo(const wchar_t* langName, int tabInfo, bool bac
 			return true;
 		}
 	}
+
+	for (size_t x = 0; x < _pXmlExternalLexerDoc.size(); ++x)
+	{
+		TiXmlNode* langRoot = (_pXmlExternalLexerDoc[x]->FirstChild(L"NotepadPlus"))->FirstChildElement(L"Languages");
+		for (TiXmlNode* childNode = langRoot->FirstChildElement(L"Language");
+			childNode;
+			childNode = childNode->NextSibling(L"Language"))
+		{
+			TiXmlElement* element = childNode->ToElement();
+			const wchar_t* nm = element->Attribute(L"name");
+			if (nm && lstrcmp(langName, nm) == 0)
+			{
+				childNode->ToElement()->SetAttribute(L"tabSettings", tabInfo);
+				childNode->ToElement()->SetAttribute(L"backspaceUnindent", backspaceUnindent ? L"yes" : L"no");
+				_pXmlExternalLexerDoc[x]->SaveFile();
+				return true;
+			}
+		}
+	}
+
 	return false;
 }
 

@@ -128,7 +128,7 @@ public:
 	void addFileNameTitle(const wchar_t * fileName);
 	void addFileHitCount(int count);
 	void addSearchResultInfo(int count, int countSearched, bool searchedEntireNotSelection, const FindOption *pFindOpt);
-	const char* foundLine(FoundInfo fi, SearchResultMarkingLine mi, const wchar_t* foundline, size_t totalLineNumber);
+	std::string foundLine(FoundInfo fi, SearchResultMarkingLine mi, const wchar_t* foundline, size_t foundLineLen, size_t totalLineNumber);
 	void setFinderStyle();
 	void setFinderStyleForNpc(bool onlyColor = false);
 	void removeAll();
@@ -405,7 +405,7 @@ public :
 
 	void execSavedCommand(int cmd, uptr_t intValue, const std::wstring& stringValue);
 	void clearMarks(const FindOption& opt);
-	void setStatusbarMessage(const std::wstring & msg, FindStatus staus, const std::wstring& tooltipMsg = L"");
+	void setStatusbarMessage(const std::wstring & msg, FindStatus status, const std::wstring& tooltipMsg = L"");
 	void setStatusbarMessageWithRegExprErr(ScintillaEditView* pEditView);
 	std::wstring getScopeInfoForStatusBar(FindOption const *pFindOpt) const;
 	Finder * createFinder();

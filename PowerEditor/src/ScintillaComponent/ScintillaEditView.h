@@ -455,7 +455,7 @@ public:
 
 	void getText(char *dest, size_t start, size_t end) const;
 	void getGenericText(wchar_t *dest, size_t destlen, size_t start, size_t end) const;
-	void getGenericText(wchar_t *dest, size_t deslen, size_t start, size_t end, intptr_t* mstart, intptr_t* mend) const;
+	void getGenericText(wchar_t* dest, size_t destlen, size_t start, size_t end, intptr_t* mstart, intptr_t* mend, intptr_t* outLen = nullptr) const;
 	std::wstring getGenericTextAsString(size_t start, size_t end) const;
 	void insertGenericTextFrom(size_t position, const wchar_t *text2insert) const;
 	void replaceSelWith(const char * replaceText);
@@ -1245,6 +1245,15 @@ protected:
 	void setSasLexer(){
 		setLexer(L_SAS, LIST_0 | LIST_1 | LIST_2 | LIST_3);
 	};
+
+	void setErrorListLexer() {
+		setLexer(L_ERRORLIST, LIST_NONE);
+		bool do_show_escape_chars = isShownCcUniEol();	// decide based on the ControlCharacter+UnicodeEOL flag
+		execute(SCI_STYLESETVISIBLE, static_cast<WPARAM>(SCE_ERR_ESCSEQ), static_cast<LPARAM>(do_show_escape_chars));
+		execute(SCI_STYLESETVISIBLE, static_cast<WPARAM>(SCE_ERR_ESCSEQ_UNKNOWN), static_cast<LPARAM>(do_show_escape_chars));
+		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("lexer.errorlist.value.separate"), reinterpret_cast<LPARAM>("0"));
+		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("lexer.errorlist.escape.sequences"), reinterpret_cast<LPARAM>("1"));
+	}
 
     //--------------------
 
